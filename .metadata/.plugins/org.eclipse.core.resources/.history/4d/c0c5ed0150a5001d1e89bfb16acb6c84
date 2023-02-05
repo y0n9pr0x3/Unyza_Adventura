@@ -1,0 +1,88 @@
+package main;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
+import javax.swing.JPanel;
+
+import character.Player;
+
+public class PlayingCanvas extends JPanel implements Runnable{
+	
+	//screen set
+	final int orgRectSize = 16; //16x16 rectangle
+	final int scale = 3;		
+	
+	public final int rectSize = orgRectSize * scale; //48x48 rectangles and player
+	final int maxScreenCol = 16;
+	final int maxScreenRow = 12;
+	final int screenWidth = rectSize * maxScreenCol;  // 760 pixels
+	final int screenHeight = rectSize * maxScreenRow; // 576 pixels
+	
+	KeyInputs keyI = new KeyInputs();
+	Player player = new Player(this, keyI);
+	Thread gamingThread;
+	
+	int FPS = 60;
+	
+	public PlayingCanvas() {
+		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+		this.setBackground(Color.black);
+		this.setDoubleBuffered(true);
+		this.addKeyListener(keyI);
+		this.setFocusable(true);
+	}
+	
+	public void startGamingThread() {
+		gamingThread = new Thread(this);
+		gamingThread.start();
+	}
+
+	@Override
+	public void run() {
+		
+		double drawInter = 1000000000/FPS; 
+		double delta = 0;
+		long lastTime = System.nanoTime();
+		long currentTime;
+		long timer= 0;
+		int drawCount = 0;
+		
+		while(gamingThread != null) {
+			
+			currentTime = System.nanoTime();
+			
+			delta += (currentTime - lastTime ) / drawInter;
+			timer += (currentTime - lastTime);
+			lastTime = currentTime;
+			
+			if(delta >= 1) {
+				update();
+				repaint();
+				delta--;
+				drawCount++;
+			}
+			if(timer >= 1000000000) {
+				System.out.println("FPS: "+ drawCount);
+				drawCount=0;
+				timer=0;
+			}
+		}
+		
+	}
+	
+	public void update() {
+		
+		player.update();
+		
+	}
+	
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		Graphics2D g2 = (Graphics2D)g;
+		
+		g2.dispose();
+	}
+}

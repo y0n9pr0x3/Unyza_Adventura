@@ -1,0 +1,15 @@
+package main;
+
+import character.Characters;
+
+public class CollisionManager {
+	PlayingCanvas pc;
+	
+	public CollisionManager(PlayingCanvas pc) {
+		this.pc = pc;
+	}
+	
+	public void checkRect(Characters character) {
+		
+	}
+}

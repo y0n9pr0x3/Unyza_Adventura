@@ -1,0 +1,16 @@
+package character;
+
+import main.KeyInputs;
+import main.PlayingCanvas;
+
+public class Player extends Characters	{
+	PlayingCanvas pc;
+	KeyInputs keyI;
+	
+	public Player(PlayingCanvas pc, KeyInputs keyI) {
+		this.pc = pc;
+		this.keyI = keyI;
+	}
+	
+	
+}

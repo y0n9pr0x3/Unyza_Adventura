@@ -1,0 +1,41 @@
+package rects;
+
+import java.awt.Graphics2D;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import main.PlayingCanvas;
+
+public class RectManager {
+	PlayingCanvas pc;
+	Rect[] rect;
+	
+	public RectManager(PlayingCanvas pc) {
+		this.pc = pc;
+		
+		rect = new Rect[10];
+		getViewRect();
+	}
+	
+	public void getViewRect() {
+		
+		try {
+			rect[0] = new Rect();
+			rect[0].image = ImageIO.read(getClass().getResourceAsStream("/rects/002.png"));
+			
+			rect[1] = new Rect();
+			rect[1].image = ImageIO.read(getClass().getResourceAsStream("/rects/032.png"));
+			
+			rect[2] = new Rect();
+			rect[2].image = ImageIO.read(getClass().getResourceAsStream("/rects/017.png"));
+			
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void draw(Graphics2D g2) {
+		g2.drawImage(rect[0].image,0,0,pc.rectSize,pc.rectSize,null);
+	}
+}

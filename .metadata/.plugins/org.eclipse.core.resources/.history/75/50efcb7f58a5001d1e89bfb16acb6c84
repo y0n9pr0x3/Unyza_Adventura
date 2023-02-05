@@ -1,0 +1,97 @@
+package rects;
+
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import javax.imageio.ImageIO;
+
+import main.PlayingCanvas;
+
+public class RectManager {
+	PlayingCanvas pc;
+	Rect[] rect;
+	int mapRectNum[][];
+	
+	public RectManager(PlayingCanvas pc) {
+		this.pc = pc;
+		
+		rect = new Rect[10];
+		mapRectNum = new int[pc.maxScreenCol][pc.maxScreenRow];
+		getViewRect();
+		loadMap();
+	}
+	
+	public void getViewRect() {
+		
+		try {
+			rect[0] = new Rect();
+			rect[0].image = ImageIO.read(getClass().getResourceAsStream("/rects/002.png"));
+			
+			rect[1] = new Rect();
+			rect[1].image = ImageIO.read(getClass().getResourceAsStream("/rects/032.png"));
+			
+			rect[2] = new Rect();
+			rect[2].image = ImageIO.read(getClass().getResourceAsStream("/rects/017.png"));
+			
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void loadMap() {
+		
+		try {
+			InputStream is = getClass().getResourceAsStream("/map/worlds01.text");
+			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			
+			int col=0;
+			int row=0;
+			
+			while(col < pc.maxScreenCol && row < pc.maxScreenRow) {
+				String line = br.readLine();
+				
+				while(col < pc.maxScreenCol) {
+					String numbers[] = line.split(" ");
+					int num = Integer.parseInt(numbers[col]);
+					mapRectNum[col][row]=num;
+					col++;
+				}
+				if(col == pc.maxScreenCol) {
+					col=0;
+					row++;
+				}
+			}
+			br.close();
+		}catch(Exception e) {
+			
+		}
+	}
+	
+	public void draw(Graphics2D g2) {
+		
+		int col = 0;
+		int row = 0;
+		int x = 0;
+		int y = 0;
+		
+		while(col < pc.maxScreenCol && row < pc.maxScreenRow) {
+			
+			int rectNum = mapRectNum[col][row];
+			
+			g2.drawImage(rect[rectNum].image, x, y,pc.rectSize, pc.rectSize, null);
+			col++;
+			x += pc.rectSize;
+			
+			if(col == pc.maxScreenCol) {
+				col = 0;
+				x = 0;
+				row++;
+				y += pc.rectSize;
+			}
+		}
+	}
+}

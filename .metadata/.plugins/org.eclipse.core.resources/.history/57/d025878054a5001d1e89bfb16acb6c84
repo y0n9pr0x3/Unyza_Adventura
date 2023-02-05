@@ -1,0 +1,29 @@
+package rects;
+
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import main.PlayingCanvas;
+
+public class RectManager {
+	PlayingCanvas pc;
+	Rect[] rect;
+	
+	public RectManager(PlayingCanvas pc) {
+		this.pc = pc;
+		
+		rect = new Rect[10];
+		getViewRect();
+	}
+	
+	public void getViewRect() {
+		
+		try {
+			rect[0] = new Rect();
+			rect[0].image = ImageIO.read(getClass().getResourceAsStream("/rects/002.png"));
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+}

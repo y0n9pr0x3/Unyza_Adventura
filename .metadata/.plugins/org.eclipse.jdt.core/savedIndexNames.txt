@@ -1,0 +1,4 @@
+INDEX VERSION 1.131+D:\bakalarka\.metadata\.plugins\org.eclipse.jdt.core
+1865797976.index
+1535177651.index
+2847687471.index

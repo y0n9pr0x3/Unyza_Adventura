@@ -1,0 +1,46 @@
+package character;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+
+import main.KeyInputs;
+import main.PlayingCanvas;
+
+public class Player extends Characters	{
+	PlayingCanvas pc;
+	KeyInputs keyI;
+	
+	public Player(PlayingCanvas pc, KeyInputs keyI) {
+		this.pc = pc;
+		this.keyI = keyI;
+		setDefaultVal();
+	}
+	public void setDefaultVal() {
+		x=100;
+		y=100;
+		speed=4;
+	}
+	
+	public void update() {
+		
+		if(keyI.upPress == true) {
+			y -= speed;
+		}
+		else if(keyI.downPress == true) {
+			y += speed;
+		}
+		else if(keyI.leftPress == true) {
+			x -= speed;
+		}
+		else if(keyI.rightPress == true) {
+			x += speed;
+		}
+	}
+	
+	public void draw(Graphics2D g2) {
+		
+		g2.setColor(Color.white);
+		g2.fillRect(x, y, pc.rectSize, pc.rectSize);
+	}
+	
+}

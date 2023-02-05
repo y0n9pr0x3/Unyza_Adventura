@@ -1,0 +1,12 @@
+/**
+ * 
+ */
+package main;
+
+/**
+ * @author balaz
+ *
+ */
+public @interface autor {
+
+}

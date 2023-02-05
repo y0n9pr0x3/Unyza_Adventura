@@ -1,0 +1,46 @@
+package main;
+
+import java.awt.Color;
+import java.awt.Dimension;
+
+import javax.swing.JPanel;
+
+public class PlayingCanvas extends JPanel implements Runnable{
+	
+	//screen set
+	final int orgRectSize = 16; //16x16 rectangle
+	final int scale = 3;		
+	
+	final int rectSize = orgRectSize * scale; //48x48 rectangles and player
+	final int maxScreenCol = 16;
+	final int maxScreenRow = 12;
+	final int screenWidth = rectSize * maxScreenCol;  // 760 pixels
+	final int screenHeight = rectSize * maxScreenRow; // 576 pixels
+	
+	Thread gamingThread;
+	
+	public PlayingCanvas() {
+		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+		this.setBackground(Color.black);
+		this.setDoubleBuffered(true);
+		
+	}
+	
+	public void startGamingThread() {
+		gamingThread = new Thread(this);
+		gamingThread.start();
+	}
+
+	@Override
+	public void run() {
+		
+		while(gamingThread != null) {
+			
+			
+		}
+		
+	}
+	
+	
+	
+}
