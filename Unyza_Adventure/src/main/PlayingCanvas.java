@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import javax.swing.JPanel;
 
 import character.Player;
+import object.SuperObject;
 import rects.RectManager;
 
 public class PlayingCanvas extends JPanel implements Runnable{
@@ -25,14 +26,16 @@ public class PlayingCanvas extends JPanel implements Runnable{
 	//world settings
 	public final int maxWorldCol = 50;
 	public final int maxWorldRow = 50;
-	public final int worldWidth = rectSize * maxWorldCol;
-	public final int worldHeight = rectSize * maxWorldRow;
 	
 	public KeyInputs keyI = new KeyInputs();
 	public Player player = new Player(this, keyI);
 	public RectManager rectM = new RectManager(this);
 	public CollisionManager collisionM = new CollisionManager(this);
+	public SuperObject obj[] = new SuperObject[20];
+	public DrawObjects dObject = new DrawObjects(this);
+	public Sound sound = new Sound();
 	Thread gamingThread;
+	
 	
 	int FPS = 60;
 	
@@ -42,6 +45,12 @@ public class PlayingCanvas extends JPanel implements Runnable{
 		this.setDoubleBuffered(true);
 		this.addKeyListener(keyI);
 		this.setFocusable(true);
+	}
+	
+	
+	public void setupGame() {
+		dObject.setObject();
+		playMusic(0);
 	}
 	
 	public void startGamingThread() {
@@ -92,7 +101,30 @@ public class PlayingCanvas extends JPanel implements Runnable{
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D)g;
 		rectM.draw(g2);
+		
+		for(int i=0 ; i < obj.length; i++) {
+			if(obj[i] != null) {
+				obj[i].draw(g2, this);
+			}
+		}
+		
 		player.draw(g2);
 		g2.dispose();
+	}
+	
+	
+	public void playMusic(int i) {
+		sound.setFile(i);
+		sound.play();
+		sound.loop();
+	}
+	
+	public void stopMusic() {
+		sound.stop();
+	}
+	
+	public void playSE(int i) {
+		sound.setFile(i);
+		sound.play();
 	}
 }

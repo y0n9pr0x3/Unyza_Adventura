@@ -17,6 +17,7 @@ public class Player extends Characters	{
 	
 	public final int screenX;
 	public final int screenY;
+	public int hasKey = 0;
 	
 	public Player(PlayingCanvas pc, KeyInputs keyI) {
 		this.pc = pc;
@@ -28,6 +29,8 @@ public class Player extends Characters	{
 		solidRect = new Rectangle();
 		solidRect.x = 8;
 		solidRect.y = 16;
+		solidRectDefaultX = solidRect.x;
+		solidRectDefaultY = solidRect.y;
 		solidRect.width = 32;
 		solidRect.height = 32;
 		
@@ -75,6 +78,8 @@ public class Player extends Characters	{
 			
 			collisionOn = false;
 			pc.collisionM.checkRect(this);
+			int objIndex = pc.collisionM.checkObject(this, true);
+			pickUpObj(objIndex);
 			
 			if(collisionOn == false) {
 				switch(direction) {
@@ -102,6 +107,33 @@ public class Player extends Characters	{
 					spriteNum = 1;
 				}
 				spriteCounter=0;
+			}
+		}
+	}
+	
+	public void pickUpObj(int i) {
+		if(i != 999) {
+			String objectName = pc.obj[i].name;
+			switch(objectName) {
+			case "Kľúčik" :
+				pc.playSE(1);
+				hasKey++;
+				pc.obj[i] = null;
+				System.out.println("KLUCE: "+hasKey);
+				break;
+			case "Dvere" :
+				if(hasKey > 0) {
+					pc.playSE(3);
+					pc.obj[i] = null;
+					hasKey--;
+					System.out.println("KLUCE: "+hasKey);
+				}
+				break;
+			case "Jordany" :
+				pc.playSE(2);
+				speed += 2;
+				pc.obj[i] = null;
+				break;
 			}
 		}
 	}

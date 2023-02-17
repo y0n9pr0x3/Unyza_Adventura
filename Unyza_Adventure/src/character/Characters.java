@@ -13,5 +13,6 @@ public class Characters {
 	public int spriteCounter= 0;
 	public int spriteNum = 1;
 	public Rectangle solidRect;
+	public int solidRectDefaultX , solidRectDefaultY;
 	public boolean collisionOn = false;
 }

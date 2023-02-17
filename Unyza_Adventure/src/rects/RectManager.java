@@ -29,7 +29,7 @@ public class RectManager {
 		
 		try {
 			rect[0] = new Rect();
-			rect[0].image = ImageIO.read(getClass().getResourceAsStream("/rects/002.png"));
+			rect[0].image = ImageIO.read(getClass().getResourceAsStream("/rects/099.png"));
 			
 			rect[1] = new Rect();
 			rect[1].image = ImageIO.read(getClass().getResourceAsStream("/rects/032.png"));
@@ -43,7 +43,7 @@ public class RectManager {
 			rect[3].image = ImageIO.read(getClass().getResourceAsStream("/rects/017.png"));
 			
 			rect[4] = new Rect();
-			rect[4].image = ImageIO.read(getClass().getResourceAsStream("/rects/016.png"));
+			rect[4].image = ImageIO.read(getClass().getResourceAsStream("/rects/098.png"));
 			rect[4].collision = true;
 			
 			rect[5] = new Rect();
