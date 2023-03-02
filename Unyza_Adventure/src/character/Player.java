@@ -10,6 +10,8 @@ import javax.imageio.ImageIO;
 
 import main.KeyInputs;
 import main.PlayingCanvas;
+import main.Utility;
+import rects.Rect;
 
 public class Player extends Characters	{
 	PlayingCanvas pc;
@@ -17,9 +19,10 @@ public class Player extends Characters	{
 	
 	public final int screenX;
 	public final int screenY;
-	public int hasKey = 0;
+	//public int hasKey = 0;
 	
 	public Player(PlayingCanvas pc, KeyInputs keyI) {
+		super(pc);
 		this.pc = pc;
 		this.keyI = keyI;
 		
@@ -45,20 +48,17 @@ public class Player extends Characters	{
 	}
 	
 	public void getViewPlayer() {
-		try {
-			up1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_1.png"));
-			up2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_2.png"));
-			down1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_1.png"));
-			down2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_2.png"));
-			left1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_1.png"));
-			left2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_2.png"));
-			right1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_1.png"));
-			right2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_2.png"));
-		}catch(IOException e) {
-			e.printStackTrace();
-		}
+		up1 = setup("/player/boy_up_1");
+		up2 = setup("/player/boy_up_2");
+		down1 = setup("/player/boy_down_1");
+		down2 = setup("/player/boy_down_2");
+		left1 = setup("/player/boy_left_1");
+		left2 = setup("/player/boy_left_2");
+		right1 = setup("/player/boy_right_1");
+		right2 = setup("/player/boy_right_2");
+		
 	}
-	
+
 	public void update() {
 		
 		if(keyI.upPress == true || keyI.downPress == true || keyI.leftPress == true || keyI.rightPress == true) {
@@ -76,10 +76,17 @@ public class Player extends Characters	{
 				direction = "right";
 			}
 			
+			//check rect coll
 			collisionOn = false;
 			pc.collisionM.checkRect(this);
+			
+			//check object collision
 			int objIndex = pc.collisionM.checkObject(this, true);
 			pickUpObj(objIndex);
+			
+			//check npc collision
+			int npcIndex = pc.collisionM.checkCharacters(this, pc.npc);
+			interactNpc(npcIndex);
 			
 			if(collisionOn == false) {
 				switch(direction) {
@@ -113,28 +120,7 @@ public class Player extends Characters	{
 	
 	public void pickUpObj(int i) {
 		if(i != 999) {
-			String objectName = pc.obj[i].name;
-			switch(objectName) {
-			case "Kľúčik" :
-				pc.playSE(1);
-				hasKey++;
-				pc.obj[i] = null;
-				System.out.println("KLUCE: "+hasKey);
-				break;
-			case "Dvere" :
-				if(hasKey > 0) {
-					pc.playSE(3);
-					pc.obj[i] = null;
-					hasKey--;
-					System.out.println("KLUCE: "+hasKey);
-				}
-				break;
-			case "Jordany" :
-				pc.playSE(2);
-				speed += 2;
-				pc.obj[i] = null;
-				break;
-			}
+			
 		}
 	}
 	
@@ -177,7 +163,17 @@ public class Player extends Characters	{
 			break;
 			
 		}
-		g2.drawImage(image, screenX, screenY,pc.rectSize, pc.rectSize, null);
+		g2.drawImage(image, screenX, screenY, null);
+	}
+	
+	public void interactNpc(int i) {
+		if(i != 999) {
+			if(pc.keyI.enterPress == true) {
+				pc.gameState = pc.dialogState;
+				pc.npc[i].speak();
+			}
+		}
+		pc.keyI.enterPress = false;
 	}
 	
 }

@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 
 import main.PlayingCanvas;
+import main.Utility;
 
 public class RectManager {
 	PlayingCanvas pc;
@@ -19,37 +20,67 @@ public class RectManager {
 	public RectManager(PlayingCanvas pc) {
 		this.pc = pc;
 		
-		rect = new Rect[10];
+		rect = new Rect[100];
 		mapRectNum = new int[pc.maxWorldCol][pc.maxWorldCol];
 		getViewRect();
-		loadMap("/map/world01.txt");
+		loadMap("/map/world2.txt");
 	}
 	
 	public void getViewRect() {
+		setup(0, "000", false);
+		setup(1, "001", false);
+		setup(2, "002", false);
+		setup(18, "018", true);
+		setup(19, "019", true);
+		setup(20, "020", true);
+		setup(21, "021", true);
+		setup(22, "022", true);
+		setup(23, "023", true);
+		setup(24, "024", true);
+		setup(25, "025", true);
+		setup(26, "026", true);
+		setup(27, "027", true);
+		setup(28, "028", true);
+		setup(29, "029", true);
+		setup(30, "030", true);
+		setup(31, "031", true);
+		setup(3, "003", false);
+		setup(4, "004", false);
+		setup(5, "005", false);
+		setup(6, "006", false);
+		setup(7, "007", false);
+		setup(8, "008", false);
+		setup(9, "009", false);
+		setup(10, "010", false);
+		setup(11, "011", false);
+		setup(12, "012", false);
+		setup(13, "013", false);
+		setup(14, "014", false);
+		setup(15, "015", false);
+		setup(17, "017", false);
+		setup(32, "032", true);
+		setup(16, "016", true);
+		setup(33, "033", false);
+		setup(34, "034", false);
+		setup(35, "035", true);
+		setup(98, "098", true);
+		setup(99, "099", false);
+		
+		setup(36, "036", false);
+		setup(37, "037", false);
+		setup(47, "tabula", false);
+	}
+	
+	public void setup(int i, String imagePath, boolean collision) {
+		Utility utility = new Utility();
 		
 		try {
-			rect[0] = new Rect();
-			rect[0].image = ImageIO.read(getClass().getResourceAsStream("/rects/099.png"));
+			rect[i] = new Rect();
+			rect[i].image = ImageIO.read(getClass().getResourceAsStream("/rects/" + imagePath +".png"));
+			rect[i].image = utility.scaleImage(rect[i].image, pc.rectSize, pc.rectSize);
+			rect[i].collision = collision;
 			
-			rect[1] = new Rect();
-			rect[1].image = ImageIO.read(getClass().getResourceAsStream("/rects/032.png"));
-			rect[1].collision = true;
-			
-			rect[2] = new Rect();
-			rect[2].image = ImageIO.read(getClass().getResourceAsStream("/rects/019.png"));
-			rect[2].collision = true;
-			
-			rect[3] = new Rect();
-			rect[3].image = ImageIO.read(getClass().getResourceAsStream("/rects/017.png"));
-			
-			rect[4] = new Rect();
-			rect[4].image = ImageIO.read(getClass().getResourceAsStream("/rects/098.png"));
-			rect[4].collision = true;
-			
-			rect[5] = new Rect();
-			rect[5].image = ImageIO.read(getClass().getResourceAsStream("/rects/sand.png"));
-			
-		}catch(IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -102,7 +133,7 @@ public class RectManager {
 			   worldY + pc.rectSize > pc.player.worldY - pc.player.screenY && 
 			   worldY - pc.rectSize < pc.player.worldY + pc.player.screenY) {
 				
-				g2.drawImage(rect[rectNum].image, screenX, screenY ,pc.rectSize, pc.rectSize, null);
+				g2.drawImage(rect[rectNum].image, screenX, screenY , null);
 			}
 			
 

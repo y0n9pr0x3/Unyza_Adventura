@@ -108,4 +108,86 @@ public class CollisionManager {
 		
 		return index;
 	}
+	
+	public int checkCharacters(Characters character , Characters[] target) {
+		int index =999;
+		
+		for(int i = 0; i < target.length; i++) {
+			if(target [i] !=null) {
+				
+				//get characters solid rect position
+				character.solidRect.x = character.worldX + character.solidRect.x;
+				character.solidRect.y = character.worldY + character.solidRect.y;
+				
+				//get the objects solid rect position
+				target[i].solidRect.x = target[i].worldX + target[i].solidRect.x;
+				target[i].solidRect.y = target[i].worldY + target[i].solidRect.y;
+				
+				switch(character.direction) {
+				case "up":
+					character.solidRect.y -= character.speed; 	//intersects = checking two rectangles if it touching
+					break;
+				case "down":
+					character.solidRect.y += character.speed;
+					break;
+				case "left":
+					character.solidRect.x -= character.speed;
+					break;
+				case "right":
+					character.solidRect.x += character.speed;
+					break;
+				}
+				if(character.solidRect.intersects(target[i].solidRect)) {
+					if(target[i] != character) {
+						character.collisionOn=true;
+						index = i;
+					}
+				}
+				character.solidRect.x = character.solidRectDefaultX;
+				character.solidRect.y = character.solidRectDefaultY;
+				target[i].solidRect.x = target[i].solidRectDefaultX;
+				target[i].solidRect.y = target[i].solidRectDefaultY;
+			}
+		}
+		
+		return index;
+	}
+	
+	public boolean checkPlayer(Characters character ) {
+		boolean contactPlayer = false;
+		//get characters solid rect position
+		character.solidRect.x = character.worldX + character.solidRect.x;
+		character.solidRect.y = character.worldY + character.solidRect.y;
+		
+		//get the objects solid rect position
+		pc.player.solidRect.x = pc.player.worldX + pc.player.solidRect.x;
+		pc.player.solidRect.y = pc.player.worldY + pc.player.solidRect.y;
+		
+		switch(character.direction) {
+		case "up":
+			character.solidRect.y -= character.speed; 	//intersects = checking two rectangles if it touching
+			break;
+		case "down":
+			character.solidRect.y += character.speed;
+			break;
+		case "left":
+			character.solidRect.x -= character.speed;
+			break;
+		case "right":
+			character.solidRect.x += character.speed;
+			break;
+		}
+
+		if(character.solidRect.intersects(pc.player.solidRect)) {
+			character.collisionOn=true;
+			contactPlayer = true;
+		}
+		
+		character.solidRect.x = character.solidRectDefaultX;
+		character.solidRect.y = character.solidRectDefaultY;
+		pc.player.solidRect.x = pc.player.solidRectDefaultX;
+		pc.player.solidRect.y = pc.player.solidRectDefaultY;
+		
+		return contactPlayer;
+	}
 }

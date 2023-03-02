@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import main.PlayingCanvas;
+import main.Utility;
 
 public class SuperObject {
 	public BufferedImage image;
@@ -14,6 +15,7 @@ public class SuperObject {
 	public Rectangle solidRect = new Rectangle(0,0,48,48);
 	public int solidRectDefaultX = 0;
 	public int solidRectDefaultY = 0;
+	public Utility utility = new Utility();
 	
 	
 	public void draw(Graphics2D g2, PlayingCanvas pc) {
