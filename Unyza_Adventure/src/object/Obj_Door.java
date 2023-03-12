@@ -1,25 +1,25 @@
 package object;
 
-import javax.imageio.ImageIO;
 
+import character.Characters;
 import main.PlayingCanvas;
 
-public class Obj_Door extends SuperObject{
-	PlayingCanvas pc;
+public class Obj_Door extends Characters{
+	
 	public Obj_Door(PlayingCanvas pc){
-		this.pc = pc;
+		super(pc);
+		
 		name = "Dvere";
-		
-		try {
-			image = ImageIO.read(getClass().getResourceAsStream("/objects/door.png"));
-			utility.scaleImage(image, pc.rectSize, pc.rectSize);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		
+		down1 = setup("/objects/door",pc.rectSize,pc.rectSize);
 		collision = true;
+		type= type_obstacle;
 		
+		solidRect.x = 0;
+		solidRect.y = 16;
+		solidRectDefaultX = solidRect.x;
+		solidRectDefaultY = solidRect.y;
+		solidRect.width = 48;
+		solidRect.height = 32;
 	}
 
 }

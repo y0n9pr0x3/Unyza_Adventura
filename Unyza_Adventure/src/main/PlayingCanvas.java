@@ -4,15 +4,18 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.UUID;
 
 import javax.swing.JPanel;
 
 import character.Characters;
 import character.Player;
-import object.SuperObject;
 import rects.RectManager;
 
+@SuppressWarnings("serial")
 public class PlayingCanvas extends JPanel implements Runnable{
 	
 	//screen set
@@ -33,9 +36,13 @@ public class PlayingCanvas extends JPanel implements Runnable{
 	public Player player = new Player(this, keyI);
 	public RectManager rectM = new RectManager(this);
 	public CollisionManager collisionM = new CollisionManager(this);
-	public SuperObject obj[] = new SuperObject[20];
+	public Characters obj[] = new Characters[20];
 	public Characters npc[] = new Characters[10];
+	public Characters mon[] = new Characters[20];
+	public ArrayList<Characters> characList = new ArrayList<>();
+	public ArrayList<Characters> projectileList = new ArrayList<>();
 	public DrawObjects dObject = new DrawObjects(this);
+	public Events events = new Events(this);
 	public UserInter ui = new UserInter(this);
 	public Sound music = new Sound();
 	public Sound se = new Sound();
@@ -71,6 +78,7 @@ public class PlayingCanvas extends JPanel implements Runnable{
 	public void setupGame() {
 		dObject.setObject();
 		dObject.setNpc();
+		dObject.setMon();
 		generujID();
 		//playMusic(0);
 		gameState = tittleState;
@@ -125,6 +133,34 @@ public class PlayingCanvas extends JPanel implements Runnable{
 					npc[i].update();
 				}
 			}
+			
+			//mon
+			for(int i=0; i< mon.length; i++) {
+				if(mon[i] != null) {
+					if(mon[i].alive == true && mon[i].dying == false ) {
+
+						mon[i].update();
+					}
+					if(mon[i].alive == false) {
+						mon[i].checkDrop();
+						mon[i]= null;
+					}
+				}
+			}
+			
+			//projectile
+			for(int i=0; i< projectileList.size(); i++) {
+				if(projectileList.get(i) != null) {
+					if(projectileList.get(i).alive == true ) {
+
+						projectileList.get(i).update();
+					}
+					if(projectileList.get(i).alive == false) {
+
+						projectileList.remove(i);
+					}
+				}
+			}
 		}
 		if(gameState == pauseState) {
 
@@ -147,23 +183,56 @@ public class PlayingCanvas extends JPanel implements Runnable{
 			ui.draw(g2);
 			
 		}else {
+			
+			//rects
 			rectM.draw(g2);
 			
-			for(int i=0 ; i < obj.length; i++) {
-				if(obj[i] != null) {
-					obj[i].draw(g2, this);
-				}
-			}
 			
-			//npc
-			for(int i=0 ; i < npc.length; i++) {
+			//add characters to list
+			characList.add(player);
+			
+			for(int i = 0; i < npc.length ; i++) {
 				if(npc[i] != null) {
-					npc[i].draw(g2);
+					characList.add(npc[i]);
 				}
 			}
 			
-			//player
-			player.draw(g2);
+			for(int i = 0; i < obj.length ; i++) {
+				if(obj[i] != null) {
+					characList.add(obj[i]);
+				}
+			}
+			
+			for(int i = 0; i < mon.length ; i++) {
+				if(mon[i] != null) {
+					characList.add(mon[i]);
+				}
+			}
+			
+			for(int i = 0; i < projectileList.size() ; i++) {
+				if(projectileList.get(i) != null) {
+					characList.add(projectileList.get(i));
+				}
+			}
+			
+			//sort
+			Collections.sort(characList, new Comparator<Characters>() {
+
+				@Override
+				public int compare(Characters o1, Characters o2) {
+					int result = Integer.compare(o1.worldY, o2.worldY);
+					return result;
+				}
+				
+			});
+			
+			//draw characters
+			for(int i = 0; i < characList.size() ; i++) {
+				characList.get(i).draw(g2);
+			}
+			
+			//reset
+			characList.clear();
 			
 			//UI
 			ui.draw(g2);
@@ -174,7 +243,15 @@ public class PlayingCanvas extends JPanel implements Runnable{
 				long drawEnd = System.nanoTime();
 				long passed = drawEnd- drawStart;
 				g2.setColor(Color.white);
-				g2.drawString("Draw time: " + passed, 10, 400);
+				
+				int x = 10;
+				int y = 400;
+				int lineHeight = 20;
+				g2.drawString("World X: " + player.worldX, x, y); y += lineHeight;
+				g2.drawString("World Y: " + player.worldY,x, y );y += lineHeight;
+				g2.drawString("Col: " + (player.worldX + player.solidRect.x)/rectSize ,x, y );y += lineHeight;
+				g2.drawString("Row: " + (player.worldY + player.solidRect.y)/rectSize,x, y );y += lineHeight;
+				g2.drawString("Draw time: " + passed, x , y );
 			}
 			
 			g2.dispose();

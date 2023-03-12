@@ -1,21 +1,15 @@
 package object;
 
-import javax.imageio.ImageIO;
 
+import character.Characters;
 import main.PlayingCanvas;
 
-public class Obj_Key extends SuperObject{
-	PlayingCanvas pc;
+public class Obj_Key extends Characters{
 	
 	public Obj_Key(PlayingCanvas pc){
-		this.pc = pc;
+		super(pc);
 		name = "Kľúčik";
-		
-		try {
-			image = ImageIO.read(getClass().getResourceAsStream("/objects/key.png"));
-			utility.scaleImage(image, pc.rectSize, pc.rectSize);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		down1 = setup("/objects/key",pc.rectSize,pc.rectSize);
+		description = "[" + name +"]\nAj tajomnú komnatu \nsním odemkneš!";
 	}
 }

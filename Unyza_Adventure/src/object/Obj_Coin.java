@@ -1,20 +1,25 @@
 package object;
 
-import javax.imageio.ImageIO;
 
+import character.Characters;
 import main.PlayingCanvas;
 
-public class Obj_Coin extends SuperObject{
+public class Obj_Coin extends Characters{
 	PlayingCanvas pc;
 	public Obj_Coin(PlayingCanvas pc){
-		this.pc = pc;
-		name = "Unyza Coin";
+		super(pc);
+		this.pc=pc;
 		
-		try {
-			image = ImageIO.read(getClass().getResourceAsStream("/objects/coin_Uniza.png"));
-			utility.scaleImage(image, pc.rectSize, pc.rectSize);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		name="Uniza dolár";
+		type = type_pickupONLY;
+		down1= setup ("/objects/coin_uniza",pc.rectSize,pc.rectSize);
+		value=10;
+	}
+	
+	public boolean use(Characters character) {
+		pc.playSE(1);
+		pc.ui.addMess("Lovákos +" +value);
+		pc.player.coin +=value;
+		return true;
 	}
 }

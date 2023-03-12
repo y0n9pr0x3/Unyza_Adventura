@@ -4,16 +4,17 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.Buffer;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import object.Obj_Key;
+import character.Characters;
+import object.Obj_BeerAmmo;
+import object.Obj_Heart;
 
 public class UserInter {
 	
@@ -23,14 +24,18 @@ public class UserInter {
 	public boolean messOn = false;
 	public boolean gameFinish = false;
 	public String currentDialogue = "";
-	public String mess = "";
-	public int messCount = 0;
-	BufferedImage ovca, znakU, monster, unyza, stuff11, stuff22;
+	ArrayList<String> mess = new ArrayList<>();
+	ArrayList<Integer> messCount = new ArrayList<>();
+	//public String mess = "";
+	//public int messCount = 0;
+	BufferedImage ovca, znakU, monster, unyza, stuff11, stuff22, heart_f, heart_h, heart_b, beer_full, beer_blank;
 	Graphics2D g2;
 	Utility utility = new Utility();
 	public int selectedNum = 0;
 	public int tittlescreenState = 0;
 	public int subState =0;
+	public int slotCol =0;
+	public int slotRow =0;
 	
 	
 	public UserInter(PlayingCanvas pc) {
@@ -43,11 +48,33 @@ public class UserInter {
 			e.printStackTrace();
 		}
 		
+		//ovca
+		try {
+			BufferedImage uniza = ImageIO.read(getClass().getResourceAsStream("/img/ovca.png"));
+			ovca = utility.scaleImage(uniza, pc.screenWidth-30, pc.screenHeight-30);
+			
+			BufferedImage znak = ImageIO.read(getClass().getResourceAsStream("/img/uniza_znak.png"));
+			znakU = utility.scaleImage(znak, pc.screenWidth-30, pc.screenHeight-30);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		//hearts
+		Characters heart = new Obj_Heart(pc);
+		heart_f = heart.image;
+		heart_h = heart.image2;
+		heart_b = heart.image3;
+		//ammo
+		Characters beer = new Obj_BeerAmmo(pc);
+		beer_full = beer.image;
+		beer_blank = beer.image2;
 	}
 	
-	public void showMess(String text) {
-		mess = text;
-		messOn = true;
+	public void addMess(String text) {
+
+		mess.add(text);
+		messCount.add(0);
+		
 	}
 	
 	public void draw(Graphics2D g2) {
@@ -63,19 +90,298 @@ public class UserInter {
 		
 		//playing mode
 		if(pc.gameState == pc.huntState) {
-			
+			drawLife();
+			drawMess();
 		}
 		
 		//pause mode
 		if(pc.gameState == pc.pauseState) {
+			drawLife();
 			drawPause();
 		}
 		
 		//dialogue mode
 		if(pc.gameState == pc.dialogState) {
+			drawLife();
 			drawDialogue();
 		}
 		
+		//character mode
+		if(pc.gameState == pc.characterState) {
+			drawCharacter();
+			drawInventory();
+		}
+		
+	}
+	
+	public void drawLife() {
+		
+		int x = pc.rectSize;
+		int y = pc.rectSize - (pc.rectSize/2);
+		
+		int i=0;
+		
+		//draw max life
+		while(i <pc.player.maxLife/2) {
+			g2.drawImage(heart_b, x, y, null);
+			i++;
+			x+= pc.rectSize;
+		}
+		
+		//reset
+		x = pc.rectSize;
+		y = pc.rectSize - (pc.rectSize/2);
+		
+		i=0;
+		
+		//current life
+		while(i<pc.player.life) {
+			g2.drawImage(heart_h, x, y, null);
+			i++;
+			if(i <pc.player.life) {
+				g2.drawImage(heart_f, x, y, null);
+			}
+			i++;
+			x += pc.rectSize;
+		}
+		
+		
+		//draw mana
+		x = pc.rectSize;
+		y = pc.rectSize +20;
+		i=0;
+		
+		while(i < pc.player.maxMana) {
+			g2.drawImage(beer_blank, x, y, null);
+			i++;
+			x+=35;
+		}
+		
+		//beer
+		x = pc.rectSize;
+		y = pc.rectSize +20;
+		i=0;
+		
+		while(i < pc.player.mana) {
+			g2.drawImage(beer_full, x, y, null);
+			i++;
+			x+=35;
+		}
+	}
+	
+	
+	public void drawMess() {
+		int messX = pc.rectSize;
+		int messY = pc.rectSize*6;
+		g2.setFont(purisaB);
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD,23F));
+		
+		for(int i =0; i < mess.size(); i++) {
+			if(mess.get(i) != null) {
+				g2.setColor(Color.black);
+				g2.drawString(mess.get(i),messX,messY);
+				
+				g2.setColor(new Color(252, 127, 3,200));
+				g2.drawString(mess.get(i),messX+2,messY+2);
+				
+				int counter = messCount.get(i) +1;	// messageCounter++
+				messCount.set(i, counter);			//set the counter to the array
+				messY += 50;
+				
+				if(messCount.get(i) > 180) {
+					mess.remove(i);
+					messCount.remove(i);
+				}
+			}
+		}
+	}
+	
+	public void drawInventory() {
+		int frameX= pc.rectSize *9;
+		int frameY= pc.rectSize;
+		int frameWidth= pc.rectSize *6;
+		int frameHeight= pc.rectSize *5;
+		
+		
+		drawSubWind(frameX, frameY, frameWidth, frameHeight);
+		
+		//SLot
+		final int slotXstart= frameX + 20;
+		final int slotYstart= frameY + 20;
+		int slotX = slotXstart;
+		int slotY = slotYstart;
+		int slotSize= pc.rectSize+3;
+		
+		//player items
+		for(int i = 0; i < pc.player.inventory.size(); i++) {
+			
+			if(pc.player.inventory.get(i) == pc.player.currentWeapon ||
+					pc.player.inventory.get(i) == pc.player.currentShield) {
+				g2.setColor(new Color(179,98,0));
+				g2.fillRoundRect(slotX, slotY, pc.rectSize, pc.rectSize,10,10);
+			}
+			
+			
+			g2.drawImage(pc.player.inventory.get(i).down1, slotX, slotY,null);
+			slotX += slotSize;
+			if(i == 4 || i == 9 || i == 14) {
+				slotX = slotXstart;
+				slotY += slotSize;
+			}
+		}
+		
+		
+		int cursorX = slotXstart + (slotSize * slotCol);
+		int cursorY = slotYstart + (slotSize * slotRow);
+		int cursorWidth = pc.rectSize;
+		int cursorHeight = pc.rectSize;
+		
+		//draw cursor
+		g2.setColor(new Color(169,169,169));
+		//g2.fillRect(cursorX, cursorY, cursorWidth, cursorHeight);
+		g2.setColor(Color.black);
+		g2.setStroke(new BasicStroke(3));
+		g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight,10 ,10);
+		
+		
+		//description
+		int dFrameX=frameX;
+		int dFrameY= frameY+frameHeight+10;
+		int dFrameWidth= frameWidth;
+		int dFrameHeight= pc.rectSize*3;
+		
+		
+		//text
+		int textX = dFrameX+20;
+		int textY= dFrameY+ pc.rectSize;
+		g2.setFont(g2.getFont().deriveFont(20F));
+		
+		int itemIndex = getItemIndexOnSlot(slotCol,slotRow);
+		if(itemIndex < pc.player.inventory.size()) {
+			
+			drawSubWind(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+			
+			for(String line : pc.player.inventory.get(itemIndex).description.split("\n")) {
+				g2.drawString(line, textX, textY);
+				textY += 32;
+			}
+		}
+	}
+	
+	public void drawCharacter() {
+		//window frame
+		final int frameX = pc.rectSize ;
+		final int frameY = pc.rectSize;
+		final int frameWidth = pc.rectSize*5;
+		final int frameHeight = pc.rectSize * 10;
+		drawSubWind(frameX, frameY, frameWidth, frameHeight);
+		
+		//text
+		g2.setColor(Color.black);
+		g2.setFont(purisaB);
+		g2.setFont(g2.getFont().deriveFont(24F));
+		
+		g2.drawImage(ovca, 160, 65 , pc.rectSize,  pc.rectSize , null );
+		
+		int textX = frameX + 20;
+		int textY = frameY+pc.rectSize;
+		final int lineHeight = 35;
+		
+		//names
+		g2.drawString("Level", textX, textY);
+		textY += lineHeight;
+		g2.drawString("Život", textX, textY);
+		textY += lineHeight;
+		g2.drawString("Mana", textX, textY);
+		textY += lineHeight;
+		g2.drawString("Sila", textX, textY);
+		textY += lineHeight;
+		g2.drawString("Obratnosť", textX, textY);
+		textY += lineHeight;
+		g2.drawString("Útok", textX, textY);
+		textY += lineHeight;
+		g2.drawString("Obrana", textX, textY);
+		textY += lineHeight;
+		g2.drawString("Exp", textX, textY);
+		textY += lineHeight;
+		g2.drawString("Další Level", textX, textY);
+		textY += lineHeight;
+		g2.drawString("Dolár", textX, textY);
+		textY += lineHeight+15;
+		g2.drawString("Zbraň", textX, textY);
+		textY += lineHeight+15;
+		g2.drawString("Štít", textX, textY);
+		textY += lineHeight;
+		
+		
+		//values 
+		int tailX = (frameX + frameWidth)- 30;
+		//reset
+		textY = frameY + pc.rectSize;
+		String value;
+		
+		
+		value= String.valueOf(pc.player.level);
+		textX = getXforAlignToRightText(value, tailX);
+		g2.drawString(value, textX, textY);
+		textY += lineHeight;
+		
+		value= String.valueOf(pc.player.life +"/"+ pc.player.maxLife);
+		textX = getXforAlignToRightText(value, tailX);
+		g2.drawString(value, textX, textY);
+		textY += lineHeight;
+		
+		value= String.valueOf(pc.player.mana +"/"+ pc.player.maxMana);
+		textX = getXforAlignToRightText(value, tailX);
+		g2.drawString(value, textX, textY);
+		textY += lineHeight;
+		
+		value= String.valueOf(pc.player.strength);
+		textX = getXforAlignToRightText(value, tailX);
+		g2.drawString(value, textX, textY);
+		textY += lineHeight;
+		
+		value= String.valueOf(pc.player.dexterity);
+		textX = getXforAlignToRightText(value, tailX);
+		g2.drawString(value, textX, textY);
+		textY += lineHeight;
+		
+		value= String.valueOf(pc.player.attack);
+		textX = getXforAlignToRightText(value, tailX);
+		g2.drawString(value, textX, textY);
+		textY += lineHeight;
+		
+		
+		value= String.valueOf(pc.player.defense);
+		textX = getXforAlignToRightText(value, tailX);
+		g2.drawString(value, textX, textY);
+		textY += lineHeight;
+		
+		value= String.valueOf(pc.player.exp);
+		textX = getXforAlignToRightText(value, tailX);
+		g2.drawString(value, textX, textY);
+		textY += lineHeight;
+		
+		value= String.valueOf(pc.player.nextLevelExp);
+		textX = getXforAlignToRightText(value, tailX);
+		g2.drawString(value, textX, textY);
+		textY += lineHeight;
+		
+		value= String.valueOf(pc.player.coin);
+		textX = getXforAlignToRightText(value, tailX);
+		g2.drawString(value, textX, textY);
+		textY += 15;
+		
+		g2.drawImage(pc.player.currentWeapon.down1, tailX-pc.rectSize, textY, null);
+		textY += pc.rectSize;
+		
+		g2.drawImage(pc.player.currentShield.down1, tailX-pc.rectSize, textY, null);
+		textY += pc.rectSize;
+	}
+	
+	public int getItemIndexOnSlot(int slotCol, int slotRow) {
+		int itemIndex = slotCol + (slotRow*5);
+		return itemIndex;
 	}
 	
 	public void drawPause() {
@@ -93,16 +399,7 @@ public class UserInter {
 		g2.drawString(text, x +3, y +6);
 		
 		
-		//ovca
-		try {
-			BufferedImage uniza = ImageIO.read(getClass().getResourceAsStream("/img/ovca.png"));
-			ovca = utility.scaleImage(uniza, pc.screenWidth-30, pc.screenHeight-30);
-			
-			BufferedImage znak = ImageIO.read(getClass().getResourceAsStream("/img/uniza_znak.png"));
-			znakU = utility.scaleImage(znak, pc.screenWidth-30, pc.screenHeight-30);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
 		
 		y -= 100;
 		
@@ -165,8 +462,9 @@ public class UserInter {
 				unyza= utility.scaleImage(uniza, pc.screenWidth, pc.screenHeight);
 				g2.drawImage(uniza, 0, 0, null);
 			} catch (Exception e) {
-				// TODO: handle exception
+				e.printStackTrace();
 			}
+			
 			
 			//tittle name
 			g2.setFont(purisaB);
@@ -195,28 +493,66 @@ public class UserInter {
 			
 			//text gandalf
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD,30));
-			x=pc.screenWidth/2 + (pc.rectSize*2);
-			y += pc.rectSize*4;
-			g2.setColor(Color.black);
-			g2.drawString("Skúl Gandalf", x, y);
-			
-			g2.setColor(Color.decode("#FF742c"));
-			
-			g2.drawString("Skúl Gandalf", x+4, y+4);
-			
-			
-			
-			//gandalf
 			x=pc.screenWidth/2 + (pc.rectSize*3);
-			y += pc.rectSize;
+			y += pc.rectSize*4;
+			g2.setColor(Color.BLACK);
+			g2.drawString("PO", x+4, y+2);
+			g2.setColor(Color.decode("#FF742c"));
+			g2.drawString("PO", x, y);
+			g2.setColor(Color.red);
+			g2.drawString("U", x+45, y);
+			g2.setColor(Color.BLACK);
+			g2.drawString("čNOSŤ", x+74, y+2);
+			g2.setColor(Color.decode("#FF742c"));
+			g2.drawString("čNOSŤ", x+70, y);
 			
-			try {
-				BufferedImage monster2 = ImageIO.read(getClass().getResourceAsStream("/img/oldman_down_1.png"));
-				monster= utility.scaleImage(monster2, pc.screenWidth, pc.screenHeight);
-				g2.drawImage(monster, x, y,pc.rectSize*3, pc.rectSize*3,null);
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
+			g2.setColor(Color.BLACK);
+			g2.drawString("VZDELÁVA", x-154, y+32);
+			g2.setColor(Color.decode("#FF742c"));
+			g2.drawString("VZDELÁVA", x-150, y+30);
+			g2.setColor(Color.red);
+			g2.drawString("N", x+45, y+30);
+			g2.setColor(Color.BLACK);
+			g2.drawString("IE", x+74, y+32);
+			g2.setColor(Color.decode("#FF742c"));
+			g2.drawString("IE", x+70, y+30);
+			
+			
+			g2.setColor(Color.BLACK);
+			g2.drawString("S", x+34, y+62);
+			g2.setColor(Color.decode("#FF742c"));
+			g2.drawString("S", x+30, y+60);
+			g2.setColor(Color.red);
+			g2.drawString("Y", x+48, y+60);
+			g2.setColor(Color.BLACK);
+			g2.drawString("STÉM", x+79, y+62);
+			g2.setColor(Color.decode("#FF742c"));
+			g2.drawString("STÉM", x+75, y+60);
+			
+			g2.setColor(Color.red);
+			g2.drawString("Z", x+48, y+90);
+			g2.setColor(Color.BLACK);
+			g2.drawString("RUčNOSŤ", x+79, y+92);
+			g2.setColor(Color.decode("#FF742c"));
+			g2.drawString("RUčNOSŤ", x+75, y+90);
+			
+			
+			g2.setColor(Color.BLACK);
+			g2.drawString("KATASTROF", x-154, y+122);
+			g2.setColor(Color.decode("#FF742c"));
+			g2.drawString("KATASTROF", x-158, y+120);
+			g2.setColor(Color.red);
+			g2.drawString("A", x+48, y+120);
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			//monster
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD,42));
@@ -350,7 +686,7 @@ public class UserInter {
 			y=(2 * pc.rectSize) + (pc.rectSize/3);
 			
 			try {
-				BufferedImage stuff1 = ImageIO.read(getClass().getResourceAsStream("/img/deafaultStuff.png"));
+				BufferedImage stuff1 = ImageIO.read(getClass().getResourceAsStream("/img/deafaultStuffv2.png"));
 				stuff11= utility.scaleImage(stuff1, pc.screenWidth, pc.screenHeight);
 				g2.drawImage(stuff11, x, y,pc.rectSize*5, pc.rectSize*9,null);
 			} catch (Exception e) {
@@ -361,7 +697,7 @@ public class UserInter {
 			y=pc.rectSize*5;
 			
 			try {
-				BufferedImage stuff2 = ImageIO.read(getClass().getResourceAsStream("/img/deafaultStuff2.png"));
+				BufferedImage stuff2 = ImageIO.read(getClass().getResourceAsStream("/img/deafaultStuff2v2.png"));
 				stuff22= utility.scaleImage(stuff2, pc.screenWidth, pc.screenHeight);
 				g2.drawImage(stuff22, x, y,pc.rectSize*5, pc.rectSize*6 + (pc.rectSize / 3),null);
 			} catch (Exception e) {

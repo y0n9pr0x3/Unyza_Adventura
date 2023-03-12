@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
     <fullyQualifiedTypeName name="main.DrawObjects"/>
-    <fullyQualifiedTypeName name="object.Obj_Coin"/>
     <fullyQualifiedTypeName name="object.Obj_Door"/>
     <fullyQualifiedTypeName name="object.Obj_Chest"/>
     <fullyQualifiedTypeName name="object.SuperObject"/>
@@ -26,7 +25,6 @@
     <fullyQualifiedTypeName name="java.lang.Character"/>
     <fullyQualifiedTypeName name="character.Player"/>
     <fullyQualifiedTypeName name="java.awt.Rectangle"/>
-    <fullyQualifiedTypeName name="character.Characters"/>
     <fullyQualifiedTypeName name="character.Npc_profesor1"/>
     <fullyQualifiedTypeName name="java.awt.Graphics2D"/>
     <fullyQualifiedTypeName name="java.util.Random"/>
@@ -35,5 +33,13 @@
     <fullyQualifiedTypeName name="java.awt.Color"/>
     <fullyQualifiedTypeName name="java.lang.System"/>
     <fullyQualifiedTypeName name="java.util.UUID"/>
+    <fullyQualifiedTypeName name="java.lang.Double"/>
+    <fullyQualifiedTypeName name="character.Projectile"/>
+    <fullyQualifiedTypeName name="object.Obj_Rock"/>
     <fullyQualifiedTypeName name="main.PlayingCanvas"/>
+    <fullyQualifiedTypeName name="character.Characters"/>
+    <fullyQualifiedTypeName name="object.OBJ_Flasa_Borovicky"/>
+    <fullyQualifiedTypeName name="object.Obj_Coin"/>
+    <fullyQualifiedTypeName name="object.Obj_Heart"/>
+    <fullyQualifiedTypeName name="object.Obj_BeerAmmo"/>
 </qualifiedTypeNameHistroy>

@@ -1,12 +1,8 @@
 package character;
 
-import java.awt.image.BufferedImage;
 import java.util.Random;
 
-import javax.imageio.ImageIO;
-
 import main.PlayingCanvas;
-import main.Utility;
 
 public class Npc_profesor1 extends Characters{
 	
@@ -19,14 +15,14 @@ public class Npc_profesor1 extends Characters{
 	}
 	
 	public void getViewNpc() {
-		up1 = setup("/npc/oldman_up_1");
-		up2 = setup("/npc/oldman_up_2");
-		down1 = setup("/npc/oldman_down_1");
-		down2 = setup("/npc/oldman_down_2");
-		left1 = setup("/npc/oldman_left_1");
-		left2 = setup("/npc/oldman_left_2");
-		right1 = setup("/npc/oldman_right_1");
-		right2 = setup("/npc/oldman_right_2");
+		up1 = setup("/npc/oldman_up_1",pc.rectSize,pc.rectSize);
+		up2 = setup("/npc/oldman_up_2",pc.rectSize,pc.rectSize);
+		down1 = setup("/npc/oldman_down_1",pc.rectSize,pc.rectSize);
+		down2 = setup("/npc/oldman_down_2",pc.rectSize,pc.rectSize);
+		left1 = setup("/npc/oldman_left_1",pc.rectSize,pc.rectSize);
+		left2 = setup("/npc/oldman_left_2",pc.rectSize,pc.rectSize);
+		right1 = setup("/npc/oldman_right_1",pc.rectSize,pc.rectSize);
+		right2 = setup("/npc/oldman_right_2",pc.rectSize,pc.rectSize);
 		
 	}
 	

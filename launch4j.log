@@ -1,0 +1,47 @@
+
+
+Version:	3.50
+CmdLine:	D:\baka555\hra.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	D:\baka555\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	1.019.000_002
+Java max ver:	
+Substitute:	JAVA_HOME = C:\Program Files\Eclipse Adoptium\jre-8.0.352.8-hotspot\
+Substitute:	PATH = C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files\Eclipse Adoptium\jre-8.0.352.8-hotspot\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Git\cmd;C:\Users\balaz\AppData\Local\Microsoft\WindowsApps;C:\Users\balaz\AppData\Local\JetBrains\Toolbox\scripts;C:\Program Files\Eclipse Adoptium\jre-8.0.352.8-hotspot\\bin
+JRE paths:	C:\Program Files\Eclipse Adoptium\jre-8.0.352.8-hotspot\;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files\Eclipse Adoptium\jre-8.0.352.8-hotspot\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Git\cmd;C:\Users\balaz\AppData\Local\Microsoft\WindowsApps;C:\Users\balaz\AppData\Local\JetBrains\Toolbox\scripts;C:\Program Files\Eclipse Adoptium\jre-8.0.352.8-hotspot\\bin
+Check launcher:	C:\Program Files\Eclipse Adoptium\jre-8.0.352.8-hotspot\bin\javaw.exe (OK)
+Version string: 1.008.000_352 / 64-Bit (Ignore)
+Check launcher:	C:\Program Files\Common Files\Oracle\Java\javapath\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Eclipse Adoptium\jre-8.0.352.8-hotspot\bin\javaw.exe (OK)
+Version string: 1.008.000_352 / 64-Bit (Ignore)
+Check launcher:	C:\Windows\system32\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\System32\Wbem\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\System32\WindowsPowerShell\v1.0\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\System32\OpenSSH\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Git\cmd\bin\javaw.exe (not found)
+Check launcher:	C:\Users\balaz\AppData\Local\Microsoft\WindowsApps\bin\javaw.exe (not found)
+Check launcher:	C:\Users\balaz\AppData\Local\JetBrains\Toolbox\scripts\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Eclipse Adoptium\jre-8.0.352.8-hotspot\bin\javaw.exe (OK)
+Version string: 1.008.000_352 / 64-Bit (Ignore)
+64-bit search:	SOFTWARE\JavaSoft\Java Runtime Environment...
+32-bit search:	SOFTWARE\JavaSoft\Java Runtime Environment...
+64-bit search:	SOFTWARE\JavaSoft\Java Development Kit...
+32-bit search:	SOFTWARE\JavaSoft\Java Development Kit...
+64-bit search:	SOFTWARE\JavaSoft\JRE...
+32-bit search:	SOFTWARE\JavaSoft\JRE...
+64-bit search:	SOFTWARE\JavaSoft\JDK...
+Check:		SOFTWARE\JavaSoft\JDK\19.0.2
+Version string: 1.019.000_002 / 64-Bit (OK)
+Check launcher:	C:\Program Files\Java\jdk-19\bin\javaw.exe (OK)
+Match:		1.019.000_002
+Runtime used:	1.019.000_002 (64-bit)
+Launcher:	C:\Program Files\Java\jdk-19\bin\javaw.exe
+Launcher args:	-jar "D:\baka555\hra.exe"
+Args length:	25/32768 chars
+Exit code:	0

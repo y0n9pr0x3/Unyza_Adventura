@@ -1,20 +1,15 @@
 package object;
 
-import javax.imageio.ImageIO;
 
+import character.Characters;
 import main.PlayingCanvas;
 
-public class Obj_Chest extends SuperObject{
-	PlayingCanvas pc;
+public class Obj_Chest extends Characters{
+	
 	public Obj_Chest(PlayingCanvas pc){
-		this.pc = pc;
-		name = "Truhlos";
+		super(pc);
 		
-		try {
-			image = ImageIO.read(getClass().getResourceAsStream("/objects/chest.png"));
-			utility.scaleImage(image, pc.rectSize, pc.rectSize);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		name = "Truhlos";
+		down1 = setup("/objects/chest.png",pc.rectSize,pc.rectSize);
 	}
 }
