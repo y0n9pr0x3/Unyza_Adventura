@@ -9,6 +9,7 @@ import object.Obj_Door;
 import object.Obj_Heart;
 import object.Obj_Key;
 import object.Obj_Shield_fire;
+import rects_intera.Interact_tree;
 import character.Npc_profesor1;
 import monster.Mon_slime_1;
 
@@ -70,6 +71,14 @@ public class DrawObjects {
 		pc.npc[i] = new Npc_profesor1(pc);
 		pc.npc[i].worldX = pc.rectSize * 29;
 		pc.npc[i].worldY = pc.rectSize * 21;
+		
+	}
+	
+	public void setInterRect() {
+		int i = 0;
+		pc.iRect[i] = new Interact_tree(pc,15,15);
+		pc.iRect[i].worldX = pc.rectSize *15;
+		pc.iRect[i].worldY = pc.rectSize *15;
 		
 	}
 	

@@ -17,6 +17,7 @@ public class Main {
 		
 		PlayingCanvas playingCanvas = new PlayingCanvas();
 		window.add(playingCanvas);
+		playingCanvas.config.loadConf();
 		window.pack();
 		
 		window.setLocationRelativeTo(null);

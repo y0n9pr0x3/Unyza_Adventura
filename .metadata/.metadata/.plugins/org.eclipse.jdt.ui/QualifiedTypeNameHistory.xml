@@ -18,15 +18,12 @@
     <fullyQualifiedTypeName name="java.nio.Buffer"/>
     <fullyQualifiedTypeName name="object.Obj_Key"/>
     <fullyQualifiedTypeName name="rects.Rect"/>
-    <fullyQualifiedTypeName name="java.awt.image.BufferedImage"/>
     <fullyQualifiedTypeName name="main.KeyInputs"/>
     <fullyQualifiedTypeName name="javax.imageio.ImageIO"/>
-    <fullyQualifiedTypeName name="main.Utility"/>
     <fullyQualifiedTypeName name="java.lang.Character"/>
     <fullyQualifiedTypeName name="character.Player"/>
     <fullyQualifiedTypeName name="java.awt.Rectangle"/>
     <fullyQualifiedTypeName name="character.Npc_profesor1"/>
-    <fullyQualifiedTypeName name="java.awt.Graphics2D"/>
     <fullyQualifiedTypeName name="java.util.Random"/>
     <fullyQualifiedTypeName name="java.awt.BasicStroke"/>
     <fullyQualifiedTypeName name="java.awt.event.KeyEvent"/>
@@ -36,10 +33,19 @@
     <fullyQualifiedTypeName name="java.lang.Double"/>
     <fullyQualifiedTypeName name="character.Projectile"/>
     <fullyQualifiedTypeName name="object.Obj_Rock"/>
-    <fullyQualifiedTypeName name="main.PlayingCanvas"/>
-    <fullyQualifiedTypeName name="character.Characters"/>
     <fullyQualifiedTypeName name="object.OBJ_Flasa_Borovicky"/>
     <fullyQualifiedTypeName name="object.Obj_Coin"/>
     <fullyQualifiedTypeName name="object.Obj_Heart"/>
     <fullyQualifiedTypeName name="object.Obj_BeerAmmo"/>
+    <fullyQualifiedTypeName name="character.Characters"/>
+    <fullyQualifiedTypeName name="rects_intera.InteractiveRect"/>
+    <fullyQualifiedTypeName name="rects_intera.Interact_tree"/>
+    <fullyQualifiedTypeName name="java.awt.image.BufferedImage"/>
+    <fullyQualifiedTypeName name="java.awt.Graphics2D"/>
+    <fullyQualifiedTypeName name="java.awt.Graphics"/>
+    <fullyQualifiedTypeName name="javax.sound.sampled.FloatControl"/>
+    <fullyQualifiedTypeName name="javax.sound.sampled.FloatControl.Type"/>
+    <fullyQualifiedTypeName name="main.Utility"/>
+    <fullyQualifiedTypeName name="main.PlayingCanvas"/>
+    <fullyQualifiedTypeName name="main.Config"/>
 </qualifiedTypeNameHistroy>

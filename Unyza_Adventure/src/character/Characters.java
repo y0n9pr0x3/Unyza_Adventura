@@ -154,6 +154,7 @@ public class Characters {
 		pc.collisionM.checkObject(this, false);
 		pc.collisionM.checkCharacters(this, pc.npc);
 		pc.collisionM.checkCharacters(this, pc.mon);
+		pc.collisionM.checkCharacters(this, pc.iRect);
 		boolean contactPlayer = pc.collisionM.checkPlayer(this);
 		
 		if(this.type == type_monster && contactPlayer == true) {

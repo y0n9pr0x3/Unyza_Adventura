@@ -1,13 +1,6 @@
-/font/
-/img/
-/map/
-/monster/
-/npc/
-/objects/
-/player/
-/projectile/
 /rects/
-/sound/
-/character/
-/object/
+/rects_interact/
+/rects_intera/
 /main/
+/character/
+/map/

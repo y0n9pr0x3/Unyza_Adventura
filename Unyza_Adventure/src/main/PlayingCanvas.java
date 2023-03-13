@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,6 +15,7 @@ import javax.swing.JPanel;
 import character.Characters;
 import character.Player;
 import rects.RectManager;
+import rects_intera.InteractiveRect;
 
 @SuppressWarnings("serial")
 public class PlayingCanvas extends JPanel implements Runnable{
@@ -23,14 +25,19 @@ public class PlayingCanvas extends JPanel implements Runnable{
 	public final int scale = 3;		
 	
 	public final int rectSize = orgRectSize * scale; //48x48 rectangles and player
-	public final int maxScreenCol = 16;
+	public final int maxScreenCol = 20;
 	public final int maxScreenRow = 12;
-	public final int screenWidth = rectSize * maxScreenCol;  // 760 pixels
+	public final int screenWidth = rectSize * maxScreenCol;  // 960 pixels
 	public final int screenHeight = rectSize * maxScreenRow; // 576 pixels
 	
 	//world settings
 	public final int maxWorldCol = 50;
 	public final int maxWorldRow = 50;
+	
+	int screenWidth2 = screenWidth;
+	int screenHeight2 = screenHeight;
+	BufferedImage tempScreen;
+	Graphics2D g2;
 	
 	public KeyInputs keyI = new KeyInputs(this);
 	public Player player = new Player(this, keyI);
@@ -41,10 +48,12 @@ public class PlayingCanvas extends JPanel implements Runnable{
 	public Characters mon[] = new Characters[20];
 	public ArrayList<Characters> characList = new ArrayList<>();
 	public ArrayList<Characters> projectileList = new ArrayList<>();
+	public InteractiveRect iRect[] = new InteractiveRect[50];
 	public DrawObjects dObject = new DrawObjects(this);
 	public Events events = new Events(this);
 	public UserInter ui = new UserInter(this);
 	public Sound music = new Sound();
+	public Config config = new Config(this);
 	public Sound se = new Sound();
 	Thread gamingThread;
 	
@@ -79,9 +88,14 @@ public class PlayingCanvas extends JPanel implements Runnable{
 		dObject.setObject();
 		dObject.setNpc();
 		dObject.setMon();
+		dObject.setInterRect();
 		generujID();
 		//playMusic(0);
 		gameState = tittleState;
+		
+		
+		tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
+		g2= (Graphics2D)tempScreen.getGraphics();
 	}
 	
 	public void startGamingThread() {
@@ -161,11 +175,20 @@ public class PlayingCanvas extends JPanel implements Runnable{
 					}
 				}
 			}
+			
+			//iRect
+			for(int i = 0; i < iRect.length ; i++) {
+				if(iRect[i] != null) {
+					iRect[i].update();
+				}
+			}
 		}
 		if(gameState == pauseState) {
 
 		}
 	}
+
+	
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -186,6 +209,12 @@ public class PlayingCanvas extends JPanel implements Runnable{
 			
 			//rects
 			rectM.draw(g2);
+			
+			for(int i = 0; i < iRect.length ; i++) {
+				if(iRect[i] != null) {
+					iRect[i].draw(g2);;
+				}
+			}
 			
 			
 			//add characters to list
@@ -214,6 +243,7 @@ public class PlayingCanvas extends JPanel implements Runnable{
 					characList.add(projectileList.get(i));
 				}
 			}
+			
 			
 			//sort
 			Collections.sort(characList, new Comparator<Characters>() {

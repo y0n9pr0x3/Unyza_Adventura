@@ -161,6 +161,9 @@ public class Player extends Characters	{
 			int monIndex = pc.collisionM.checkCharacters(this, pc.mon);
 			contactMon(monIndex);
 			
+			//check iRect
+			int iRectInd = pc.collisionM.checkCharacters(this, pc.iRect);
+			
 			//check events
 			pc.events.checkEvents();
 			
@@ -279,10 +282,11 @@ public class Player extends Characters	{
 			int monsterIndex = pc.collisionM.checkCharacters(this, pc.mon);
 			damageMonster(monsterIndex, attack);
 			
-			/*
+			
 			int iRectIndex = pc.collisionM.checkCharacters(this, pc.iRect);
 			damageInteractRect(iRectIndex);
 			
+			/*
 			int projectileIndex = pc.collisionM.checkCharacters(this, pc.projectile);
 			damageProjectile(projectileIndex);
 			*/
@@ -488,6 +492,24 @@ public class Player extends Characters	{
 			if(selectedItem.type == type_consumable) {
 				selectedItem.use(this);
 				inventory.remove(itemIndex);
+			}
+		}
+	}
+	
+	public void damageInteractRect(int i) {
+		if(i != 999 && pc.iRect[i].destruct == true && pc.iRect[i].isAxe(this) == true 
+				&& pc.iRect[i].invincibl == false) {
+			
+			pc.iRect[i].playSE();
+			pc.iRect[i].life--;
+			pc.iRect[i].invincibl=true;
+			
+			if(pc.iRect[i].life == 0) {
+				pc.iRect[i] = pc.iRect[i].getDownTree();
+				pc.ui.addMess("Zničil si strom , dobrej si!");
+				//gs.ui.addMessage("Exp + " + 1);
+				coin += 2;
+				pc.playSE(3);
 			}
 		}
 	}

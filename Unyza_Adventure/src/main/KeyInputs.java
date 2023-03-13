@@ -40,6 +40,9 @@ public class KeyInputs implements KeyListener{
 		else if(pc.gameState == pc.characterState) {
 			characterState(code);
 		}
+		else if(pc.gameState == pc.optionState) {
+			optionState(code);
+		}
 		
 		
 	}
@@ -106,6 +109,65 @@ public class KeyInputs implements KeyListener{
 		}
 	}
 	
+	public void optionState(int code) {
+		if(code == KeyEvent.VK_ESCAPE) {
+			pc.gameState = pc.huntState;
+		}
+		if(code == KeyEvent.VK_ENTER) {
+			enterPress = true;
+		}
+		int maxSelectNum = 0;
+		
+		switch(pc.ui.subState) {
+		case 0: maxSelectNum=6; break;
+		case 1: maxSelectNum=1; break;
+		case 3: maxSelectNum=1; break;
+		}
+		
+		if(code == KeyEvent.VK_W) {
+			pc.ui.selectedNum--;
+			pc.playSE(9);
+			if(pc.ui.selectedNum < 0) {
+				pc.ui.selectedNum = maxSelectNum;
+			}
+		}
+		if(code == KeyEvent.VK_S) {
+			pc.ui.selectedNum++;
+			pc.playSE(9);
+			if(pc.ui.selectedNum > maxSelectNum) {
+				pc.ui.selectedNum = 0;
+			}
+		}
+		
+		if(code == KeyEvent.VK_A) {
+			if(pc.ui.subState == 0) {
+				if(pc.ui.selectedNum == 1 && pc.music.volumeScale > 0) {
+					pc.music.volumeScale--;
+					pc.music.checkVolume();
+					pc.playSE(9);
+				}
+				if(pc.ui.selectedNum == 2 && pc.se.volumeScale > 0) {
+					pc.se.volumeScale--;
+					pc.playSE(9);
+				}
+			}
+		}
+		
+		if(code == KeyEvent.VK_D) {
+			if(pc.ui.subState == 0) {
+				if(pc.ui.selectedNum == 1 && pc.music.volumeScale < 5) {
+					pc.music.volumeScale++;
+					pc.music.checkVolume();
+					pc.playSE(9);
+				}
+				if(pc.ui.selectedNum == 2 && pc.se.volumeScale < 5) {
+					pc.se.volumeScale++;
+					pc.playSE(9);
+				}
+			}
+		}
+	}
+	
 	public void huntState(int code) {
 
 		if(code == KeyEvent.VK_W) {
@@ -131,6 +193,9 @@ public class KeyInputs implements KeyListener{
 		}
 		if(code == KeyEvent.VK_F) {
 			shotPress = true;
+		}
+		if(code == KeyEvent.VK_ESCAPE) {
+			pc.gameState = pc.optionState;
 		}
 		
 		//debug

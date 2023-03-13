@@ -112,6 +112,11 @@ public class UserInter {
 			drawInventory();
 		}
 		
+		//option mode
+		if(pc.gameState == pc.optionState) {
+			drawOptionsScreen();
+		}
+		
 	}
 	
 	public void drawLife() {
@@ -169,6 +174,376 @@ public class UserInter {
 		}
 	}
 	
+	public void drawOptionsScreen() {
+		g2.setColor(Color.white);
+		g2.setFont(purisaB);
+		g2.setFont(g2.getFont().deriveFont(24F));
+		
+		//sub window
+		
+		int frameX = pc.rectSize *6;
+		int frameY= pc.rectSize;
+		int frameWidth= pc.rectSize *8;
+		int frameHeight= pc.rectSize *10;
+		
+		drawSubWind(frameX, frameY, frameWidth, frameHeight);
+		
+		switch(subState) {
+		case 0: optionsTop(frameX,frameY); break;
+		case 1: options_aboutGame(frameX, frameY);break;
+		case 2: options_control(frameX, frameY); break;
+		case 3: options_endGameConf(frameX, frameY); break;
+		case 4: options_saveGAm(frameX, frameY);break;
+		case 5: options_saved(frameX, frameY);break;
+		}
+		
+		pc.keyI.enterPress = false;
+	}
+	
+	public void optionsTop(int frameX, int frameY) {
+		int textX;
+		int textY;
+		
+		String text = "MOŽNOSTI";
+		
+		textX= getXforCenteredText(text);
+		textY= frameY + pc.rectSize;
+		g2.drawString(text, textX, textY);
+		
+		//o hre
+		textX= frameX + pc.rectSize;
+		textY += pc.rectSize+ (pc.rectSize/2);
+		g2.drawString("O HRE" , textX, textY);
+		if(selectedNum == 0) {
+			g2.drawString(">", textX-25, textY);
+			if(pc.keyI.enterPress == true) {
+				subState = 1;
+			}
+		}
+		
+		//music
+		textY+=pc.rectSize;
+		g2.drawString("HUDBA", textX, textY);
+		if(selectedNum == 1) {
+			g2.drawString(">", textX-25, textY);
+		}
+		
+		//se
+		textY+=pc.rectSize;
+		g2.drawString("EFEKTY", textX, textY);
+		if(selectedNum == 2) {
+			g2.drawString(">", textX-25, textY);
+		}
+		
+		//control
+		textY+=pc.rectSize;
+		g2.drawString("OVLÁDANIE", textX, textY);
+		if(selectedNum == 3) {
+			g2.drawString(">", textX-25, textY);
+			if(pc.keyI.enterPress == true) {
+				subState =2;
+				selectedNum=0;
+			}
+		}
+		
+		
+		//save game
+		textY+=pc.rectSize;
+		g2.drawString("ULOŽENIE HRY", textX, textY);
+		if(selectedNum == 4) {
+			g2.drawString(">", textX-25, textY);
+			if(pc.keyI.enterPress == true) {
+				subState=4;
+				selectedNum = 0;
+			}
+		}
+		
+		
+		//end game
+		textY+=pc.rectSize;
+		g2.drawString("KONEC HRY", textX, textY);
+		if(selectedNum == 5) {
+			g2.drawString(">", textX-25, textY);
+			if(pc.keyI.enterPress == true) {
+				subState=3;
+				selectedNum = 0;
+			}
+		}
+		
+		
+		
+		
+		//back
+		textY+=pc.rectSize+25;
+		g2.drawString("SPÄŤ", textX, textY);
+		if(selectedNum == 6) {
+			g2.drawString(">", textX-25, textY);
+			if(pc.keyI.enterPress == true) {
+				pc.gameState= pc.huntState;
+				selectedNum=0;
+			}
+		}
+		
+		
+		textX= frameX+ pc.rectSize*6;
+		textY= frameY+ pc.rectSize*2 + 24;
+		g2.setStroke(new BasicStroke(3));
+		
+		
+		//music volume
+		textX= frameX+ pc.rectSize*4;
+		textY += pc.rectSize - (pc.rectSize/2);
+		g2.drawRect(textX, textY, 120, 24); // 120 /5 = 24 
+		
+		int volimeWidth = 24*pc.music.volumeScale;
+		g2.fillRect(textX, textY, volimeWidth, 24);
+		
+		//se volume
+		textX= frameX+ pc.rectSize*4;
+		textY += pc.rectSize;
+		g2.drawRect(textX, textY, 120, 24);
+		volimeWidth = 24*pc.se.volumeScale;
+		g2.fillRect(textX, textY, volimeWidth, 24);
+		
+		textX= frameX+ pc.rectSize*6;
+		textY += pc.rectSize-10;
+		
+		//g2.drawImage(ovca,textX , textY,null);
+		
+		textX= frameX+ pc.rectSize*6;
+		textY += pc.rectSize;
+		
+		//g2.drawImage(ovca,textX , textY,null);
+		
+		
+		pc.config.saveConf();
+
+		
+	}
+  	
+	public void options_control(int frameX, int frameY) {
+		String text = "OVLÁDANIE";
+		int textX = getXforCenteredText(text);
+		int textY = frameY + pc.rectSize;
+		g2.drawString(text, textX, textY);
+		g2.setFont(g2.getFont().deriveFont(19F));
+		
+		
+		
+		textX = frameX + pc.rectSize;
+		textY+= pc.rectSize;
+		
+		g2.drawString("POHYB", textX, textY);
+		textY+= pc.rectSize;
+		
+		g2.drawString("ÚTOK", textX, textY);
+		textY+= pc.rectSize;
+		
+		g2.drawString("STREĽBA", textX, textY);
+		textY+= pc.rectSize;
+		
+		g2.drawString("INVENTOR", textX, textY);
+		textY+= pc.rectSize;
+		
+		g2.drawString("PAUZA", textX, textY);
+		textY+= pc.rectSize;
+		
+		g2.drawString("MOŽNOSTI", textX, textY);
+		textY+= pc.rectSize;
+		
+		//back
+		textX = frameX + pc.rectSize;
+		textY = frameY + pc.rectSize*9;
+		g2.drawString("BACK", textX, textY);
+		if(selectedNum == 0) {
+			g2.drawString(">", textX-25, textY);
+			if(pc.keyI.enterPress == true) {
+				subState=0;
+				selectedNum=3;
+			}
+		}
+		
+		textX = frameX + pc.rectSize*5;
+		textY = frameY + pc.rectSize*2;
+		g2.setColor(Color.yellow);
+		
+		g2.drawString("WASD", textX, textY);
+		textY+= pc.rectSize;
+		g2.drawString("ENTER", textX, textY);
+		textY+= pc.rectSize;
+		g2.drawString("F", textX, textY);
+		textY+= pc.rectSize;
+		g2.drawString("C", textX, textY);
+		textY+= pc.rectSize;
+		g2.drawString("P", textX, textY);
+		textY+= pc.rectSize;
+		g2.drawString("ESCAPE", textX, textY);
+		textY+= pc.rectSize;
+		
+		
+		
+	}
+	
+	
+	public void options_saved(int frameX,int frameY) {
+		int textX = frameX + pc.rectSize;
+		int textY= frameY + pc.rectSize*3;
+		
+		currentDialogue = "Hra bola úspešne\nuložena!";
+		
+		for(String line: currentDialogue.split("\n")) {
+			g2.drawString(line, textX, textY);
+			textY+= 40;
+		}
+		
+		//yes 
+		String text = "Ok";
+		textX = getXforCenteredText(text);
+		textY += pc.rectSize*3;
+		g2.drawString(text, textX, textY);
+		if(selectedNum==0) {
+			g2.drawString(">", textX-25, textY);
+			if(pc.keyI.enterPress == true) {
+				subState=0;
+				selectedNum = 0;
+				
+			}
+		}
+	}
+	
+	
+	public void options_saveGAm(int frameX,int frameY){
+		int textX = frameX + pc.rectSize;
+		int textY= frameY + pc.rectSize*3;
+		
+		currentDialogue = "Chceš uložiť hru ?!";
+		
+		for(String line: currentDialogue.split("\n")) {
+			g2.drawString(line, textX, textY);
+			textY+= 40;
+		}
+		
+		//yes 
+		String text = "ANO";
+		textX = getXforCenteredText(text);
+		textY += pc.rectSize*3;
+		g2.drawString(text, textX, textY);
+		if(selectedNum==0) {
+			g2.drawString(">", textX-25, textY);
+			if(pc.keyI.enterPress == true) {
+				subState=5;
+				//pc.saveLoad.save();
+				
+				
+			}
+		}
+		
+		//no
+		
+		text = "NIE";
+		textX = getXforCenteredText(text);
+		textY += pc.rectSize;
+		g2.drawString(text, textX, textY);
+		if(selectedNum==1) {
+			g2.drawString(">", textX-25, textY);
+			if(pc.keyI.enterPress == true) {
+				subState=0;
+				selectedNum = 0;
+			}
+		}
+	}
+	
+	
+	
+	public void options_endGameConf(int frameX,int frameY) {
+		int textX = frameX + pc.rectSize;
+		int textY= frameY + pc.rectSize*3;
+		
+		currentDialogue = "Si si istý že chceš\nvypnúť najlepšiu hru\nna svete?";
+		
+		for(String line: currentDialogue.split("\n")) {
+			g2.drawString(line, textX, textY);
+			textY+= 40;
+		}
+		
+		//yes 
+		String text = "ANO";
+		textX = getXforCenteredText(text);
+		textY += pc.rectSize*3;
+		g2.drawString(text, textX, textY);
+		if(selectedNum==0) {
+			g2.drawString(">", textX-25, textY);
+			if(pc.keyI.enterPress == true) {
+				subState=0;
+				pc.gameState = pc.tittleState;
+				tittlescreenState = 0;
+				pc.stopMusic();
+				//pc.resetGame(true);;
+			}
+		}
+		
+		//no
+		
+		text = "NIE";
+		textX = getXforCenteredText(text);
+		textY += pc.rectSize;
+		g2.drawString(text, textX, textY);
+		if(selectedNum==1) {
+			g2.drawString(">", textX-25, textY);
+			if(pc.keyI.enterPress == true) {
+				subState=0;
+				selectedNum = 5;
+			}
+		}
+	}
+	
+	
+	public void options_aboutGame(int frameX, int frameY) {
+		int textX= frameX + pc.rectSize-20;
+		int textY= frameY + pc.rectSize;
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD));
+		String text = "O HRE";
+		
+		g2.drawString(text, textX+110, textY);
+		textY+= 40;
+		currentDialogue = "Hru vypracoval študent 3. ročníka\nŽilinskej univerzity Marek Baláž!";
+		
+		Utility uTool = new Utility();
+		try {
+			BufferedImage uniza = ImageIO.read(getClass().getResourceAsStream("/img/uniza_znak.png"));
+			unyza= uTool.scaleImage(uniza, pc.rectSize+90, pc.rectSize+90);
+			g2.drawImage(unyza, textX+90, textY+60, null);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		//g2.drawImage(keyImage, textY, textY, textY, textY, frameX, frameY, textX, textY, gs);
+		
+		for(String line: currentDialogue.split("\n")) {
+			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+			g2.drawString(line, textX, textY);
+			textY+= 40;
+		}
+		
+		currentDialogue = "Kontultanom práce bol\nIng. Miroslav Benčo, PhD.";
+		
+		for(String line: currentDialogue.split("\n")) {
+			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+			g2.drawString(line, textX, textY+160);
+			textY+= 40;
+		}
+		
+		textY= frameY + pc.rectSize*9;
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+		g2.drawString("BACK", textX, textY);
+		if(selectedNum == 0) {
+			g2.drawString(">", textX-25, textY);
+			if(pc.keyI.enterPress == true) {
+				subState=0;
+				selectedNum=0;
+			}
+		}
+	}
 	
 	public void drawMess() {
 		int messX = pc.rectSize;
@@ -197,7 +572,7 @@ public class UserInter {
 	}
 	
 	public void drawInventory() {
-		int frameX= pc.rectSize *9;
+		int frameX= pc.rectSize *13;
 		int frameY= pc.rectSize;
 		int frameWidth= pc.rectSize *6;
 		int frameHeight= pc.rectSize *5;
@@ -414,7 +789,7 @@ public class UserInter {
 		g2.drawImage(ovca, x +130, y , pc.rectSize,  pc.rectSize , null );
 		
 		text = "SPONZORING FEYT UNYZA!";
-		x = pc.rectSize * 3;
+		x = pc.rectSize * 5;
 		y = pc.screenHeight / 5;
 		g2.setFont(g2.getFont().deriveFont(30f));
 		
@@ -425,7 +800,7 @@ public class UserInter {
 		g2.setColor(Color.decode("#FF742c"));
 		g2.drawString(text, x +2, y +5);
 		
-		x = pc.rectSize * 6 + (pc.rectSize /2);
+		x = pc.rectSize * 8 + (pc.rectSize /2);
 		y = pc.rectSize *8;
 		
 		g2.drawImage(znakU, x , y , (3 * pc.rectSize), (3 * pc.rectSize) , null );
@@ -485,7 +860,7 @@ public class UserInter {
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
-			x = (pc.rectSize*8)- (2* pc.rectSize) ;
+			x = (pc.rectSize*8) ;
 			y = pc.rectSize*2;
 			g2.drawImage(unyza, x, y,pc.rectSize-10, pc.rectSize-10,null);
 			
