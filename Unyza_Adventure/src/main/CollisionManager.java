@@ -27,32 +27,32 @@ public class CollisionManager {
 		switch(character.direction) {
 		case "up":
 			characterTopRow = (characterTopWorldY - character.speed)/pc.rectSize;
-			rectNum1 = pc.rectM.mapRectNum[characterLeftCol][characterTopRow];
-			rectNum2= pc.rectM.mapRectNum[characterRightCol][characterTopRow];
+			rectNum1 = pc.rectM.mapRectNum[pc.currentMap][characterLeftCol][characterTopRow];
+			rectNum2= pc.rectM.mapRectNum[pc.currentMap][characterRightCol][characterTopRow];
 			if(pc.rectM.rect[rectNum1].collision == true || pc.rectM.rect[rectNum2].collision == true) {
 				character.collisionOn = true;
 			}
 			break;
 		case "down":
 			characterBottomRow = (characterBottomWorldY + character.speed)/pc.rectSize;
-			rectNum1 = pc.rectM.mapRectNum[characterLeftCol][characterBottomRow];
-			rectNum2= pc.rectM.mapRectNum[characterRightCol][characterBottomRow];
+			rectNum1 = pc.rectM.mapRectNum[pc.currentMap][characterLeftCol][characterBottomRow];
+			rectNum2= pc.rectM.mapRectNum[pc.currentMap][characterRightCol][characterBottomRow];
 			if(pc.rectM.rect[rectNum1].collision == true || pc.rectM.rect[rectNum2].collision == true) {
 				character.collisionOn = true;
 			}
 			break;
 		case "left":
 			characterLeftCol = (characterLeftWorldX - character.speed)/pc.rectSize;
-			rectNum1 = pc.rectM.mapRectNum[characterLeftCol][characterTopRow];
-			rectNum2= pc.rectM.mapRectNum[characterLeftCol][characterBottomRow];
+			rectNum1 = pc.rectM.mapRectNum[pc.currentMap][characterLeftCol][characterTopRow];
+			rectNum2= pc.rectM.mapRectNum[pc.currentMap][characterLeftCol][characterBottomRow];
 			if(pc.rectM.rect[rectNum1].collision == true || pc.rectM.rect[rectNum2].collision == true) {
 				character.collisionOn = true;
 			}
 			break;
 		case "right":
 			characterRightCol = (characterRightWorldX + character.speed)/pc.rectSize;
-			rectNum1 = pc.rectM.mapRectNum[characterRightCol][characterTopRow];
-			rectNum2= pc.rectM.mapRectNum[characterRightCol][characterBottomRow];
+			rectNum1 = pc.rectM.mapRectNum[pc.currentMap][characterRightCol][characterTopRow];
+			rectNum2= pc.rectM.mapRectNum[pc.currentMap][characterRightCol][characterBottomRow];
 			if(pc.rectM.rect[rectNum1].collision == true || pc.rectM.rect[rectNum2].collision == true) {
 				character.collisionOn = true;
 			}
@@ -64,16 +64,16 @@ public class CollisionManager {
 	public int checkObject(Characters character, boolean player) {
 		int index = 999;
 		
-		for(int i = 0; i < pc.obj.length; i++) {
-			if(pc.obj[i] !=null) {
+		for(int i = 0; i < pc.obj[1].length; i++) {
+			if(pc.obj[pc.currentMap][i] !=null) {
 				
 				//get characters solid rect position
 				character.solidRect.x = character.worldX + character.solidRect.x;
 				character.solidRect.y = character.worldY + character.solidRect.y;
 				
 				//get the objects solid rect position
-				pc.obj[i].solidRect.x = pc.obj[i].worldX + pc.obj[i].solidRect.x;
-				pc.obj[i].solidRect.y = pc.obj[i].worldY + pc.obj[i].solidRect.y;
+				pc.obj[pc.currentMap][i].solidRect.x = pc.obj[pc.currentMap][i].worldX + pc.obj[pc.currentMap][i].solidRect.x;
+				pc.obj[pc.currentMap][i].solidRect.y = pc.obj[pc.currentMap][i].worldY + pc.obj[pc.currentMap][i].solidRect.y;
 				
 				switch(character.direction) {
 				case "up":
@@ -90,8 +90,8 @@ public class CollisionManager {
 					break;
 				}
 				
-				if(character.solidRect.intersects(pc.obj[i].solidRect)) {
-					if(pc.obj[i].collision == true) {
+				if(character.solidRect.intersects(pc.obj[pc.currentMap][i].solidRect)) {
+					if(pc.obj[pc.currentMap][i].collision == true) {
 						character.collisionOn=true;
 					}
 					if(player == true) {
@@ -101,27 +101,27 @@ public class CollisionManager {
 				
 				character.solidRect.x = character.solidRectDefaultX;
 				character.solidRect.y = character.solidRectDefaultY;
-				pc.obj[i].solidRect.x = pc.obj[i].solidRectDefaultX;
-				pc.obj[i].solidRect.y = pc.obj[i].solidRectDefaultY;
+				pc.obj[pc.currentMap][i].solidRect.x = pc.obj[pc.currentMap][i].solidRectDefaultX;
+				pc.obj[pc.currentMap][i].solidRect.y = pc.obj[pc.currentMap][i].solidRectDefaultY;
 			}
 		}
 		
 		return index;
 	}
 	
-	public int checkCharacters(Characters character , Characters[] target) {
+	public int checkCharacters(Characters character , Characters[][] target) {
 		int index =999;
 		
-		for(int i = 0; i < target.length; i++) {
-			if(target [i] !=null) {
+		for(int i = 0; i < target[1].length; i++) {
+			if(target[pc.currentMap][i] !=null) {
 				
 				//get characters solid rect position
 				character.solidRect.x = character.worldX + character.solidRect.x;
 				character.solidRect.y = character.worldY + character.solidRect.y;
 				
 				//get the objects solid rect position
-				target[i].solidRect.x = target[i].worldX + target[i].solidRect.x;
-				target[i].solidRect.y = target[i].worldY + target[i].solidRect.y;
+				target[pc.currentMap][i].solidRect.x = target[pc.currentMap][i].worldX + target[pc.currentMap][i].solidRect.x;
+				target[pc.currentMap][i].solidRect.y = target[pc.currentMap][i].worldY + target[pc.currentMap][i].solidRect.y;
 				
 				switch(character.direction) {
 				case "up":
@@ -137,16 +137,16 @@ public class CollisionManager {
 					character.solidRect.x += character.speed;
 					break;
 				}
-				if(character.solidRect.intersects(target[i].solidRect)) {
-					if(target[i] != character) {
+				if(character.solidRect.intersects(target[pc.currentMap][i].solidRect)) {
+					if(target[pc.currentMap][i] != character) {
 						character.collisionOn=true;
 						index = i;
 					}
 				}
 				character.solidRect.x = character.solidRectDefaultX;
 				character.solidRect.y = character.solidRectDefaultY;
-				target[i].solidRect.x = target[i].solidRectDefaultX;
-				target[i].solidRect.y = target[i].solidRectDefaultY;
+				target[pc.currentMap][i].solidRect.x = target[pc.currentMap][i].solidRectDefaultX;
+				target[pc.currentMap][i].solidRect.y = target[pc.currentMap][i].solidRectDefaultY;
 			}
 		}
 		

@@ -1,5 +1,6 @@
 package rects;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -13,15 +14,19 @@ import main.Utility;
 public class RectManager {
 	PlayingCanvas pc;
 	public Rect[] rect;
-	public int mapRectNum[][];
+	public int mapRectNum[][][];
+	public boolean drawPath= true;
 	
 	public RectManager(PlayingCanvas pc) {
 		this.pc = pc;
 		
 		rect = new Rect[100];
-		mapRectNum = new int[pc.maxWorldCol][pc.maxWorldCol];
+		mapRectNum = new int[pc.maxMap][pc.maxWorldCol][pc.maxWorldCol];
 		getViewRect();
-		loadMap("/map/world2.txt");
+		loadMap("/map/world2.txt",0);
+		loadMap("/map/interior01.txt",1);
+		loadMap("/map/vratnica.txt",2);
+		loadMap("/map/poschodie.txt",3);
 	}
 	
 	public void getViewRect() {
@@ -64,6 +69,21 @@ public class RectManager {
 		setup(98, "098", true);
 		setup(99, "099", false);
 		
+		//cesta / travnik
+		setup(97,"road00",false);
+		setup(96,"road05",false);
+		setup(95,"road02",false);
+		setup(94,"road11",false);
+		setup(93,"road06",false);
+		setup(92,"road04",false);
+		setup(91,"road07",false);
+		setup(90,"000",true);
+		setup(89,"road01",false);
+		setup(88,"101",false);
+		
+		
+		
+		
 		setup(36, "036", false);
 		setup(37, "037", false);
 		setup(47, "tabula", false);
@@ -83,7 +103,7 @@ public class RectManager {
 		}
 	}
 	
-	public void loadMap(String path) {
+	public void loadMap(String path, int map) {
 		
 		try {
 			InputStream is = getClass().getResourceAsStream(path);
@@ -98,7 +118,7 @@ public class RectManager {
 				while(col < pc.maxWorldCol) {
 					String numbers[] = line.split(" ");
 					int num = Integer.parseInt(numbers[col]);
-					mapRectNum[col][row]=num;
+					mapRectNum[map][col][row]=num;
 					col++;
 				}
 				if(col == pc.maxWorldCol) {
@@ -119,7 +139,7 @@ public class RectManager {
 		
 		while(worldCol < pc.maxWorldCol && worldRow < pc.maxWorldRow) {
 			
-			int rectNum = mapRectNum[worldCol][worldRow];
+			int rectNum = mapRectNum[pc.currentMap][worldCol][worldRow];
 			
 			int worldX = worldCol * pc.rectSize;
 			int worldY = worldRow * pc.rectSize;
@@ -140,6 +160,18 @@ public class RectManager {
 			if(worldCol == pc.maxWorldCol) {
 				worldCol = 0;
 				worldRow++;
+			}
+		}
+		if(drawPath == true) {
+			g2.setColor(new Color(255,0,0,70));
+			
+			for(int i= 0; i < pc.pFinder.pathList.size();i++) {
+				int worldX = pc.pFinder.pathList.get(i).col * pc.rectSize;
+				int worldY = pc.pFinder.pathList.get(i).row * pc.rectSize;
+				int screenX = worldX - pc.player.worldX + pc.player.screenX;
+				int screenY = worldY - pc.player.worldY + pc.player.screenY;
+				
+				g2.fillRect(screenX, screenY, pc.rectSize, pc.rectSize);
 			}
 		}
 	}

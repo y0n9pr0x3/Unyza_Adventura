@@ -28,24 +28,32 @@ public class Npc_profesor1 extends Characters{
 	
 	
 	public void setAction() {
-		actionCount++;
 		
-		if(actionCount > 120) {
-			Random random = new Random();
-			int i = random.nextInt(100)+1;
-			if(i<=25) {
-				direction="up";
+		
+		if(onPath == true) {
+			int goalCol = (pc.player.worldX + pc.player.solidRect.x)/pc.rectSize;
+			int goalROw = (pc.player.worldY + pc.player.solidRect.y)/pc.rectSize;
+			searchPath(goalCol, goalROw);
+		}else {
+			actionCount++;
+			
+			if(actionCount > 120) {
+				Random random = new Random();
+				int i = random.nextInt(100)+1;
+				if(i<=25) {
+					direction="up";
+				}
+				if(i>25 && i <= 50) {
+					direction="down";
+				}
+				if(i>50 && i <= 75) {
+					direction="left";
+				}
+				if(i>75 && i <= 100) {
+					direction="right";
+				}
+				actionCount =0;
 			}
-			if(i>25 && i <= 50) {
-				direction="down";
-			}
-			if(i>50 && i <= 75) {
-				direction="left";
-			}
-			if(i>75 && i <= 100) {
-				direction="right";
-			}
-			actionCount =0;
 		}
 	}
 	
@@ -59,5 +67,6 @@ public class Npc_profesor1 extends Characters{
 	
 	public void speak() {
 		super.speak();
+		onPath = false;
 	}
 }

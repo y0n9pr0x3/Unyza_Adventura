@@ -15,7 +15,8 @@ public class Obj_Axe extends Characters{
 		attackArea.width= 30;
 		attackArea.height=30;
 		description = "[" + name +"]\nVeľmi dobrá keď, \nti strom zavadzá.";
-		
+		price=20;
+		knockBackPower = 8;
 	}
 
 }

@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 
 import character.Characters;
 import object.Obj_BeerAmmo;
+import object.Obj_Coin;
 import object.Obj_Heart;
 
 public class UserInter {
@@ -28,14 +29,18 @@ public class UserInter {
 	ArrayList<Integer> messCount = new ArrayList<>();
 	//public String mess = "";
 	//public int messCount = 0;
-	BufferedImage ovca, znakU, monster, unyza, stuff11, stuff22, heart_f, heart_h, heart_b, beer_full, beer_blank;
+	BufferedImage ovca, znakU, monster, unyza, stuff11, stuff22, heart_f, heart_h, heart_b, beer_full, beer_blank,coin;
 	Graphics2D g2;
 	Utility utility = new Utility();
 	public int selectedNum = 0;
 	public int tittlescreenState = 0;
 	public int subState =0;
-	public int slotCol =0;
-	public int slotRow =0;
+	public int playerSlotCol =0;
+	public int playerSlotRow =0;
+	public int npcCol = 0;
+	public int npcRow = 0;
+	int tranCounter =0;
+	public Characters npc;
 	
 	
 	public UserInter(PlayingCanvas pc) {
@@ -68,6 +73,9 @@ public class UserInter {
 		Characters beer = new Obj_BeerAmmo(pc);
 		beer_full = beer.image;
 		beer_blank = beer.image2;
+		
+		Characters coin1= new Obj_Coin(pc);
+		coin=coin1.down1;
 	}
 	
 	public void addMess(String text) {
@@ -109,7 +117,7 @@ public class UserInter {
 		//character mode
 		if(pc.gameState == pc.characterState) {
 			drawCharacter();
-			drawInventory();
+			drawInventory(pc.player, true);
 		}
 		
 		//option mode
@@ -117,6 +125,19 @@ public class UserInter {
 			drawOptionsScreen();
 		}
 		
+		//option mode
+		if(pc.gameState == pc.gameOverState) {
+			drawGameOver();
+		}
+		
+		//transition mode
+		if(pc.gameState == pc.transitionState) {
+			drawTransition();
+		}
+		//trading state
+		if(pc.gameState == pc.tradingState) {
+			drawTradingScreen();
+		}
 	}
 	
 	public void drawLife() {
@@ -171,6 +192,196 @@ public class UserInter {
 			g2.drawImage(beer_full, x, y, null);
 			i++;
 			x+=35;
+		}
+	}
+	
+	
+	public void drawTradingScreen() {
+		
+		switch(subState) {
+		case 0: trade_select();break;
+		case 1: trade_buy();break;
+		case 2: trade_sell();break;
+		}
+		pc.keyI.enterPress = false;
+	}
+	
+	public void trade_select() {
+		int x,y,width,height;
+		drawDialogue();
+		g2.setFont(g2.getFont().deriveFont(50f));
+		String uniza = "SPONZORYNG FEYT UNYZA!";
+		x= pc.rectSize;
+		y=pc.rectSize*2;
+		g2.drawString(uniza, x, y);
+		
+		g2.setColor(new Color(252, 127, 3));
+		g2.drawString(uniza, x+4, y+4);
+		
+		//draw window
+		x= pc.rectSize *14;
+		y= pc.rectSize *3;
+		
+		width= pc.rectSize*3;
+		height= (int)(pc.rectSize * 3.5);
+		
+		drawSubWind(x, y, width, height);
+		
+		//draw texts
+		g2.setFont(g2.getFont().deriveFont(26f));
+		
+		x += pc.rectSize;
+		y += pc.rectSize;
+		g2.drawString("Kúpa", x-15, y);
+		if(selectedNum == 0) {
+			g2.drawString(">", x-34, y);
+			if(pc.keyI.enterPress == true) {
+				subState = 1;
+			}
+		}
+		y += pc.rectSize;
+		g2.drawString("Predaj", x-15, y);
+		if(selectedNum == 1) {
+			g2.drawString(">", x-34, y);
+			if(pc.keyI.enterPress == true) {
+				subState = 2;
+			}
+		}
+		y += pc.rectSize;
+		g2.drawString("Späť", x-15, y);
+		if(selectedNum == 2) {
+			g2.drawString(">", x-34, y);
+			if(pc.keyI.enterPress == true) {
+				selectedNum = 0;
+				pc.gameState = pc.dialogState;
+				currentDialogue = "Maj sa, nabudúce kúp \nteho vác";
+			}
+		}
+		
+	}
+	
+	public void trade_buy() {
+		
+		//draw player inventory
+		drawInventory(pc.player, false);
+		//draw npc inventory
+		drawInventory(npc, true);
+		
+		//draw hint window
+		int x = pc.rectSize*2;
+		int y = pc.rectSize*9+15;
+		int width = pc.rectSize*6;
+		int height = pc.rectSize*2;
+		drawSubWind(x, y, width, height);
+		g2.drawString("[ESC] Späť", x+24, y+55);
+		
+		//draw npc  coin window
+		x = pc.rectSize*11;
+		y = pc.rectSize*9+15;
+		width = pc.rectSize*6;
+		height = pc.rectSize*2;
+		drawSubWind(x, y, width, height);
+		g2.drawString("Doláros: "+pc.player.coin, x+24, y+55);
+		
+		//DRAW price WINDOW
+		int itemIndex= getItemIndexOnSlot(npcCol, npcRow);
+		if(itemIndex < npc.inventory.size()) {
+			x=(int)(pc.rectSize*5.5);
+			y=(int)(pc.rectSize*5.5);
+			width = (int)(pc.rectSize*2.5);
+			height = pc.rectSize;
+			drawSubWind(x, y, width, height);
+			g2.drawImage(coin, x+10	, y+8, 32,32,null);
+			
+			int price = npc.inventory.get(itemIndex).price;
+			
+			String text = ""+price;
+			x=getXforAlignToRightText(text, pc.rectSize*8-20);
+			g2.drawString(text, x, y+30);
+			
+			
+			
+			//BUYING ITEMS
+			if(pc.keyI.enterPress == true) {
+				if(npc.inventory.get(itemIndex).price > pc.player.coin) {
+					subState=0;
+					pc.gameState = pc.dialogState;
+					currentDialogue = "Nemáš love , čo by si \nchcel?";
+					drawDialogue();
+				}else {
+					if(pc.player.canObtainItem(npc.inventory.get(itemIndex)) == true) {
+						pc.player.coin -= npc.inventory.get(itemIndex).price;
+					}else {
+						subState=0;
+						pc.gameState = pc.dialogState;
+						currentDialogue = "Maš plné vrecka čo ty \nchceš!";
+					}
+				}
+			}
+		}
+	}
+	
+	public void trade_sell() {
+		//draw player invetory
+		
+		drawInventory(pc.player, true);
+		int x;
+		int y;
+		int width;
+		int height;
+		
+		//draw hint window
+		x = pc.rectSize*2;
+		y = pc.rectSize*9+15;
+		width = pc.rectSize*6;
+		height = pc.rectSize*2;
+		drawSubWind(x, y, width, height);
+		g2.drawString("[ESC] Späť", x+24, y+55);
+		
+		//draw npc  coin window
+		x = pc.rectSize*11;
+		y = pc.rectSize*9+15;
+		width = pc.rectSize*6;
+		height = pc.rectSize*2;
+		drawSubWind(x, y, width, height);
+		g2.drawString("Doláros: "+pc.player.coin, x+24, y+55);
+		
+		//DRAW price WINDOW
+		int itemIndex= getItemIndexOnSlot(playerSlotCol, playerSlotRow);
+		if(itemIndex < pc.player.inventory.size()) {
+			x=(int)(pc.rectSize*14.5);
+			y=(int)(pc.rectSize*5.5);
+			width = (int)(pc.rectSize*2.5);
+			height = pc.rectSize;
+			drawSubWind(x, y, width, height);
+			g2.drawImage(coin, x+10	, y+8, 32,32,null);
+			
+			int price = pc.player.inventory.get(itemIndex).price/2;
+			
+			String text = ""+price;
+			x=getXforAlignToRightText(text, pc.rectSize*17-20);
+			g2.drawString(text, x, y+30);
+			
+			
+			
+			//selling ITEMS
+			if(pc.keyI.enterPress == true) {
+				if(pc.player.inventory.get(itemIndex) == pc.player.currentWeapon || 
+						pc.player.inventory.get(itemIndex) == pc.player.currentShield) {
+					selectedNum=0;
+					subState=0;
+					pc.gameState = pc.dialogState;
+					currentDialogue= "Vybavené náradičko,\nnemôžeš predať!!!";
+				}else {
+					if(pc.player.inventory.get(itemIndex).amount > 1 ) {
+						pc.player.inventory.get(itemIndex).amount--;
+					}else {
+						pc.player.inventory.remove(itemIndex);
+					}
+					pc.player.coin += price;
+				}
+					
+			}
 		}
 	}
 	
@@ -319,6 +530,79 @@ public class UserInter {
 		pc.config.saveConf();
 
 		
+	}
+	
+	public void drawTransition() {
+		tranCounter++;
+		g2.setColor(new Color(0,0,0,tranCounter*5));
+		g2.fillRect(0, 0, pc.screenWidth, pc.screenHeight);
+		
+		if(tranCounter == 50) {
+			tranCounter= 0;
+			pc.gameState = pc.huntState;
+			pc.currentMap = pc.events.tempMap;
+			pc.player.worldX = pc.rectSize * pc.events.tempCol;
+			pc.player.worldY = pc.rectSize * pc.events.tempRow;
+			pc.events.previoEveX = pc.player.worldX;
+			pc.events.previoEveY = pc.player.worldY;
+		}
+	}
+	
+	public void drawGameOver() {
+		g2.setColor(new Color(0,0,0,150));
+		g2.fillRect(0, 0, pc.screenWidth, pc.screenHeight);
+		
+		int x;
+		int y;
+		String text;
+		
+		g2.setFont(purisaB);
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD,110f));
+		
+		text = "GAME OVER!";
+		
+		g2.setColor(Color.black);
+		x=getXforCenteredText(text);
+		y=pc.rectSize*4;
+		g2.drawString(text, x, y);
+		
+		g2.setColor(new Color(252, 127, 3,200));
+		x=getXforCenteredText(text);
+		y=pc.rectSize*4;
+		g2.drawString(text, x+5, y+5);
+		
+		//retry
+		g2.setFont(g2.getFont().deriveFont(50f));
+		g2.setColor(Color.black);
+		text="Skúsiť znova!";
+		x =getXforCenteredText(text);
+		y +=pc.rectSize*4;
+		g2.drawString(text, x, y);
+		
+		g2.setColor(new Color(252, 127, 3,200));
+		g2.drawString(text, x+4, y+4);
+		if(selectedNum == 0) {
+			g2.setColor(Color.black);
+			g2.drawString(">", x-pc.rectSize, y);
+			g2.setColor(Color.decode("#FF742c"));
+			g2.drawString(">", x-pc.rectSize+4, y+4);
+		}
+		
+		//quit
+		g2.setColor(Color.black);
+		text="Ukončiť hru!";
+		x =getXforCenteredText(text);
+		y += 60;
+		g2.drawString(text, x, y);
+		
+		g2.setColor(new Color(252, 127, 3,200));
+		g2.drawString(text, x+4, y+4);
+		if(selectedNum == 1) {
+			g2.setColor(Color.black);
+			g2.drawString(">", x-pc.rectSize, y);
+			g2.setColor(Color.decode("#FF742c"));
+			g2.drawString(">", x-pc.rectSize+4, y+4);
+		}
 	}
   	
 	public void options_control(int frameX, int frameY) {
@@ -478,7 +762,7 @@ public class UserInter {
 				pc.gameState = pc.tittleState;
 				tittlescreenState = 0;
 				pc.stopMusic();
-				//pc.resetGame(true);;
+				pc.restart();
 			}
 		}
 		
@@ -537,7 +821,7 @@ public class UserInter {
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
 		g2.drawString("BACK", textX, textY);
 		if(selectedNum == 0) {
-			g2.drawString(">", textX-25, textY);
+			g2.drawString(">", textX-15, textY);
 			if(pc.keyI.enterPress == true) {
 				subState=0;
 				selectedNum=0;
@@ -571,13 +855,31 @@ public class UserInter {
 		}
 	}
 	
-	public void drawInventory() {
-		int frameX= pc.rectSize *13;
-		int frameY= pc.rectSize;
-		int frameWidth= pc.rectSize *6;
-		int frameHeight= pc.rectSize *5;
+	public void drawInventory(Characters character, boolean cursor) {
+		int frameX=0;
+		int frameY=0;
+		int frameWidth=0;
+		int frameHeight=0;
+		int slotCol=0;
+		int slotRow=0;
 		
-		
+		if(character == pc.player) {
+			frameX = pc.rectSize *11;
+			frameY = pc.rectSize;
+			frameWidth = pc.rectSize*6;
+			frameHeight = pc.rectSize * 5;
+			slotCol= playerSlotCol;
+			slotRow= playerSlotRow;
+		}else {
+			frameX = pc.rectSize *2;
+			frameY = pc.rectSize;
+			frameWidth = pc.rectSize*6;
+			frameHeight = pc.rectSize * 5;
+			slotCol= npcCol;
+			slotRow= npcRow;
+		}
+		g2.setFont(purisaB);
+		//window frame
 		drawSubWind(frameX, frameY, frameWidth, frameHeight);
 		
 		//SLot
@@ -587,58 +889,82 @@ public class UserInter {
 		int slotY = slotYstart;
 		int slotSize= pc.rectSize+3;
 		
-		//player items
-		for(int i = 0; i < pc.player.inventory.size(); i++) {
-			
-			if(pc.player.inventory.get(i) == pc.player.currentWeapon ||
-					pc.player.inventory.get(i) == pc.player.currentShield) {
-				g2.setColor(new Color(179,98,0));
+		//draw player items
+		for(int i = 0; i < character.inventory.size(); i++) {
+			//EQUIP cursor
+			if(character.inventory.get(i)== character.currentWeapon || 
+					character.inventory.get(i)== character.currentShield ||
+					character.inventory.get(i)== character) {
+				g2.setColor(new Color(255,223,0));
 				g2.fillRoundRect(slotX, slotY, pc.rectSize, pc.rectSize,10,10);
 			}
 			
-			
-			g2.drawImage(pc.player.inventory.get(i).down1, slotX, slotY,null);
+			g2.drawImage(character.inventory.get(i).down1, slotX, slotY, null );
+			/*
+			//display amount
+			if(character == pc.player && character.inventory.get(i).amount > 1) {
+				g2.setFont(g2.getFont().deriveFont(32f));
+				int amountX;
+				int amountY;
+				String s = ""+ character.inventory.get(i).amount;
+				amountX=getXforAlignToRightText(s, slotX + 44);
+				amountY= slotY + pc.rectSize;
+				
+				//draw shadow number
+				g2.setColor(new Color(60,60,60));
+				g2.drawString(s, amountX, amountY);
+				
+				//number
+				g2.setColor(Color.yellow
+						);
+				g2.drawString(s, amountX-3, amountY-3);
+			}
+			*/
 			slotX += slotSize;
-			if(i == 4 || i == 9 || i == 14) {
+			
+			if(i == 4 || i == 9 || i == 14){
 				slotX = slotXstart;
 				slotY += slotSize;
 			}
 		}
 		
-		
-		int cursorX = slotXstart + (slotSize * slotCol);
-		int cursorY = slotYstart + (slotSize * slotRow);
-		int cursorWidth = pc.rectSize;
-		int cursorHeight = pc.rectSize;
-		
-		//draw cursor
-		g2.setColor(new Color(169,169,169));
-		//g2.fillRect(cursorX, cursorY, cursorWidth, cursorHeight);
-		g2.setColor(Color.black);
-		g2.setStroke(new BasicStroke(3));
-		g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight,10 ,10);
-		
-		
-		//description
-		int dFrameX=frameX;
-		int dFrameY= frameY+frameHeight+10;
-		int dFrameWidth= frameWidth;
-		int dFrameHeight= pc.rectSize*3;
-		
-		
-		//text
-		int textX = dFrameX+20;
-		int textY= dFrameY+ pc.rectSize;
-		g2.setFont(g2.getFont().deriveFont(20F));
-		
-		int itemIndex = getItemIndexOnSlot(slotCol,slotRow);
-		if(itemIndex < pc.player.inventory.size()) {
+		// cursor
+		if(cursor == true) {
+			int cursorX = slotXstart + (slotSize * slotCol);
+			int cursorY = slotYstart + (slotSize * slotRow);
+			int cursorWidth = pc.rectSize;
+			int cursorHeight = pc.rectSize;
 			
-			drawSubWind(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+			//draw cursor
+			g2.setColor(new Color(169,169,169));
+			//g2.fillRect(cursorX, cursorY, cursorWidth, cursorHeight);
+			g2.setColor(Color.black);
+			g2.setStroke(new BasicStroke(3));
+			g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight,10 ,10);
 			
-			for(String line : pc.player.inventory.get(itemIndex).description.split("\n")) {
-				g2.drawString(line, textX, textY);
-				textY += 32;
+			
+			//DESCRIPTION FREAM
+			int dFrameX=frameX;
+			int dFrameY= frameY+frameHeight+10;
+			int dFrameWidth= frameWidth;
+			int dFrameHeight= pc.rectSize*3;
+			
+			
+			//text
+			int textX = dFrameX+20;
+			int textY= dFrameY+ pc.rectSize;
+			g2.setFont(g2.getFont().deriveFont(20F));
+			
+			int itemIndex = getItemIndexOnSlot(slotCol,slotRow);
+			if(itemIndex < character.inventory.size()) {
+				
+				drawSubWind(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+				
+				for(String line : character.inventory.get(itemIndex).description.split("\n")) {
+					g2.drawString(line, textX, textY);
+					textY += 32;
+				}
+				
 			}
 		}
 	}

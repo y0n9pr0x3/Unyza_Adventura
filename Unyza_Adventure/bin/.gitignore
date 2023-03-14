@@ -1,6 +1,9 @@
-/rects/
-/rects_interact/
-/rects_intera/
-/main/
 /character/
+/main/
+/monster/
+/object/
+/rects/
+/rects_intera/
+/sound/
 /map/
+/pathfinder/

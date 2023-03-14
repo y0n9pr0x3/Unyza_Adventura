@@ -10,6 +10,6 @@ public class Obj_Chest extends Characters{
 		super(pc);
 		
 		name = "Truhlos";
-		down1 = setup("/objects/chest.png",pc.rectSize,pc.rectSize);
+		down1 = setup("/objects/chest",pc.rectSize,pc.rectSize);
 	}
 }

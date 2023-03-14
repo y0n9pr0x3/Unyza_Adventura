@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
     <fullyQualifiedTypeName name="main.DrawObjects"/>
-    <fullyQualifiedTypeName name="object.Obj_Door"/>
     <fullyQualifiedTypeName name="object.Obj_Chest"/>
     <fullyQualifiedTypeName name="object.SuperObject"/>
     <fullyQualifiedTypeName name="object.Obj_boots"/>
@@ -16,7 +15,6 @@
     <fullyQualifiedTypeName name="java.io.IOException"/>
     <fullyQualifiedTypeName name="main.UserInter"/>
     <fullyQualifiedTypeName name="java.nio.Buffer"/>
-    <fullyQualifiedTypeName name="object.Obj_Key"/>
     <fullyQualifiedTypeName name="rects.Rect"/>
     <fullyQualifiedTypeName name="main.KeyInputs"/>
     <fullyQualifiedTypeName name="javax.imageio.ImageIO"/>
@@ -27,17 +25,13 @@
     <fullyQualifiedTypeName name="java.util.Random"/>
     <fullyQualifiedTypeName name="java.awt.BasicStroke"/>
     <fullyQualifiedTypeName name="java.awt.event.KeyEvent"/>
-    <fullyQualifiedTypeName name="java.awt.Color"/>
     <fullyQualifiedTypeName name="java.lang.System"/>
     <fullyQualifiedTypeName name="java.util.UUID"/>
     <fullyQualifiedTypeName name="java.lang.Double"/>
     <fullyQualifiedTypeName name="character.Projectile"/>
     <fullyQualifiedTypeName name="object.Obj_Rock"/>
-    <fullyQualifiedTypeName name="object.OBJ_Flasa_Borovicky"/>
-    <fullyQualifiedTypeName name="object.Obj_Coin"/>
     <fullyQualifiedTypeName name="object.Obj_Heart"/>
     <fullyQualifiedTypeName name="object.Obj_BeerAmmo"/>
-    <fullyQualifiedTypeName name="character.Characters"/>
     <fullyQualifiedTypeName name="rects_intera.InteractiveRect"/>
     <fullyQualifiedTypeName name="rects_intera.Interact_tree"/>
     <fullyQualifiedTypeName name="java.awt.image.BufferedImage"/>
@@ -46,6 +40,19 @@
     <fullyQualifiedTypeName name="javax.sound.sampled.FloatControl"/>
     <fullyQualifiedTypeName name="javax.sound.sampled.FloatControl.Type"/>
     <fullyQualifiedTypeName name="main.Utility"/>
-    <fullyQualifiedTypeName name="main.PlayingCanvas"/>
     <fullyQualifiedTypeName name="main.Config"/>
+    <fullyQualifiedTypeName name="object.OBJ_Potion_Red"/>
+    <fullyQualifiedTypeName name="object.Obj_Shield_fire"/>
+    <fullyQualifiedTypeName name="object.Obj_Sword_basic"/>
+    <fullyQualifiedTypeName name="object.Obj_Key"/>
+    <fullyQualifiedTypeName name="object.Obj_Axe"/>
+    <fullyQualifiedTypeName name="object.OBJ_Flasa_Borovicky"/>
+    <fullyQualifiedTypeName name="character.Npc_Trader"/>
+    <fullyQualifiedTypeName name="object.Obj_Coin"/>
+    <fullyQualifiedTypeName name="object.Obj_Door"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="pathfinder.PathFinder"/>
+    <fullyQualifiedTypeName name="java.awt.Color"/>
+    <fullyQualifiedTypeName name="main.PlayingCanvas"/>
+    <fullyQualifiedTypeName name="character.Characters"/>
 </qualifiedTypeNameHistroy>

@@ -27,7 +27,7 @@ public class Projectile extends Characters{
 		if(user == pc.player ) {
 			int monsterIndex = pc.collisionM.checkCharacters(this, pc.mon);
 			if(monsterIndex != 999) {
-				pc.player.damageMonster(monsterIndex, attack);
+				pc.player.damageMonster(monsterIndex, attack, knockBackPower);
 				alive=false;
 			}
 		}

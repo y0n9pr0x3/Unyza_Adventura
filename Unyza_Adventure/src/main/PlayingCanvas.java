@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 
 import character.Characters;
 import character.Player;
+import pathfinder.PathFinder;
 import rects.RectManager;
 import rects_intera.InteractiveRect;
 
@@ -38,24 +39,32 @@ public class PlayingCanvas extends JPanel implements Runnable{
 	int screenHeight2 = screenHeight;
 	BufferedImage tempScreen;
 	Graphics2D g2;
-	
+
+	public final int maxMap = 10;
+	public int currentMap=0;
 	public KeyInputs keyI = new KeyInputs(this);
 	public Player player = new Player(this, keyI);
 	public RectManager rectM = new RectManager(this);
 	public CollisionManager collisionM = new CollisionManager(this);
-	public Characters obj[] = new Characters[20];
-	public Characters npc[] = new Characters[10];
-	public Characters mon[] = new Characters[20];
+	public Characters obj[][] = new Characters[maxMap][20];
+	public Characters npc[][] = new Characters[maxMap][10];
+	public Characters mon[][] = new Characters[maxMap][20];
+	public Characters projectile[][] = new Characters[maxMap][20];
 	public ArrayList<Characters> characList = new ArrayList<>();
-	public ArrayList<Characters> projectileList = new ArrayList<>();
-	public InteractiveRect iRect[] = new InteractiveRect[50];
+	//public ArrayList<Characters> projectileList = new ArrayList<>();
+	public InteractiveRect iRect[][] = new InteractiveRect[maxMap][50];
 	public DrawObjects dObject = new DrawObjects(this);
 	public Events events = new Events(this);
 	public UserInter ui = new UserInter(this);
+	public PathFinder pFinder = new PathFinder(this);
 	public Sound music = new Sound();
 	public Config config = new Config(this);
 	public Sound se = new Sound();
 	Thread gamingThread;
+	public boolean knockBack = false;
+	public int knockBackPower = 0;
+	public boolean stackable = false;
+	public int amount=1;
 	
 	String id;
 	
@@ -136,50 +145,89 @@ public class PlayingCanvas extends JPanel implements Runnable{
 		
 	}
 	
+	
+	public void retry() {
+		playMusic(0);
+		
+		
+		player.setDefaultPosition();
+		player.restoreLifeAndMana();
+		dObject.setNpc();
+		dObject.setMon();
+		
+	}
+	
+	public void restart() {
+		//playMusic(14);
+		
+		
+		
+		//setInventoryTonull("VšeKľúč");
+		//setInventoryTonull("Gumidžús");
+		
+		
+		player.setDefaultVal();
+		player.setDefaultPosition();
+		player.restoreLifeAndMana();
+		player.setItems();
+		dObject.setObject();
+		dObject.setNpc();
+		dObject.setMon();
+		dObject.setInterRect();
+	}
+	/*
+	public void setInventoryTonull(String name) {
+		for(int i=0; i < player.inventory.size(); i++) {
+			if(player.inventory.get(i).name.equals(name)) {
+				player.inventory.get(i).amount = 1;
+			}
+		}
+	}
+	*/
 	public void update() {
 		if(gameState == huntState) {
 			//player
 			player.update();
 			
 			//npc
-			for(int i=0; i< npc.length; i++) {
-				if(npc[i] != null) {
-					npc[i].update();
+			for(int i=0; i< npc[1].length; i++) {
+				if(npc[currentMap][i] != null) {
+					npc[currentMap][i].update();
 				}
 			}
 			
 			//mon
-			for(int i=0; i< mon.length; i++) {
-				if(mon[i] != null) {
-					if(mon[i].alive == true && mon[i].dying == false ) {
+			for(int i=0; i< mon[1].length; i++) {
+				if(mon[currentMap][i] != null) {
+					if(mon[currentMap][i].alive == true && mon[currentMap][i].dying == false ) {
 
-						mon[i].update();
+						mon[currentMap][i].update();
 					}
-					if(mon[i].alive == false) {
-						mon[i].checkDrop();
-						mon[i]= null;
+					if(mon[currentMap][i].alive == false) {
+						mon[currentMap][i].checkDrop();
+						mon[currentMap][i]= null;
 					}
 				}
 			}
 			
 			//projectile
-			for(int i=0; i< projectileList.size(); i++) {
-				if(projectileList.get(i) != null) {
-					if(projectileList.get(i).alive == true ) {
+			for(int i=0; i< projectile[1].length; i++) {
+				if(projectile[currentMap][i] != null) {
+					if(projectile[currentMap][i].alive == true ) {
 
-						projectileList.get(i).update();
+						projectile[currentMap][i].update();
 					}
-					if(projectileList.get(i).alive == false) {
+					if(projectile[currentMap][i].alive == false) {
 
-						projectileList.remove(i);
+						projectile[currentMap][i] = null;
 					}
 				}
 			}
 			
 			//iRect
-			for(int i = 0; i < iRect.length ; i++) {
-				if(iRect[i] != null) {
-					iRect[i].update();
+			for(int i = 0; i < iRect[1].length ; i++) {
+				if(iRect[currentMap][i] != null) {
+					iRect[currentMap][i].update();
 				}
 			}
 		}
@@ -210,9 +258,9 @@ public class PlayingCanvas extends JPanel implements Runnable{
 			//rects
 			rectM.draw(g2);
 			
-			for(int i = 0; i < iRect.length ; i++) {
-				if(iRect[i] != null) {
-					iRect[i].draw(g2);;
+			for(int i = 0; i < iRect[1].length ; i++) {
+				if(iRect[currentMap][i] != null) {
+					iRect[currentMap][i].draw(g2);;
 				}
 			}
 			
@@ -220,27 +268,27 @@ public class PlayingCanvas extends JPanel implements Runnable{
 			//add characters to list
 			characList.add(player);
 			
-			for(int i = 0; i < npc.length ; i++) {
-				if(npc[i] != null) {
-					characList.add(npc[i]);
+			for(int i = 0; i < npc[1].length ; i++) {
+				if(npc[currentMap][i] != null) {
+					characList.add(npc[currentMap][i]);
 				}
 			}
 			
-			for(int i = 0; i < obj.length ; i++) {
-				if(obj[i] != null) {
-					characList.add(obj[i]);
+			for(int i = 0; i < obj[1].length ; i++) {
+				if(obj[currentMap][i] != null) {
+					characList.add(obj[currentMap][i]);
 				}
 			}
 			
-			for(int i = 0; i < mon.length ; i++) {
-				if(mon[i] != null) {
-					characList.add(mon[i]);
+			for(int i = 0; i < mon[1].length ; i++) {
+				if(mon[currentMap][i] != null) {
+					characList.add(mon[currentMap][i]);
 				}
 			}
 			
-			for(int i = 0; i < projectileList.size() ; i++) {
-				if(projectileList.get(i) != null) {
-					characList.add(projectileList.get(i));
+			for(int i = 0; i < projectile[1].length ; i++) {
+				if(projectile[currentMap][i] != null) {
+					characList.add(projectile[currentMap][i]);
 				}
 			}
 			

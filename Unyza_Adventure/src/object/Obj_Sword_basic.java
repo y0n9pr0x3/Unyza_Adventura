@@ -16,7 +16,7 @@ public class Obj_Sword_basic extends Characters{
 		attackArea.height=36;
 		description = "[" + name +"]\nPozor, \nostrí jak čert!";
 		price=6;
-		//knockBackPower = 2;
+		knockBackPower = 2;
 	}
 
 }

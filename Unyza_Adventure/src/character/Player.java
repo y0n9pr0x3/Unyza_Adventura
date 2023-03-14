@@ -20,8 +20,7 @@ public class Player extends Characters	{
 	public final int screenX;
 	public final int screenY;
 	public boolean attackCancel = false;
-	public ArrayList<Characters> inventory = new ArrayList<>();
-	public final int inventorSize = 20;
+	
 	
 	public Player(PlayingCanvas pc, KeyInputs keyI) {
 		super(pc);
@@ -46,9 +45,10 @@ public class Player extends Characters	{
 		setItems();
 	}
 	public void setDefaultVal() {
-		worldX= pc.rectSize * 23;
-		worldY= pc.rectSize * 21;
-		speed= 4;
+		worldX= pc.rectSize * 25;
+		worldY= pc.rectSize * 36;
+		defaul_speed = 4;
+		speed= defaul_speed;
 		
 		level=1;
 		direction = "down";
@@ -73,11 +73,18 @@ public class Player extends Characters	{
 	}
 	
 	public void setItems() {
+		inventory.clear();
 		inventory.add(currentWeapon);
 		inventory.add(currentShield);
 		inventory.add(new Obj_Key(pc));
 	}
 	
+	
+	public void knockBack(Characters character, int knockBackPower) {
+		character.direction = direction;
+		character.speed += knockBackPower;
+		character.knockback=true;
+	}
 	
 	public int getAttack() {
 		attackArea= currentWeapon.attackArea;
@@ -216,7 +223,13 @@ public class Player extends Characters	{
 			//subtract mana
 			projectile.subtractResource(this);
 			
-			pc.projectileList.add(projectile);
+			for(int i=0; i < pc.projectile[1].length; i++) {
+				if(pc.projectile[pc.currentMap][i] == null) {
+					pc.projectile[pc.currentMap][i] = projectile;
+					break;
+				}
+					
+			}
 			shotAvail = 0;
 			pc.playSE(10);
 			
@@ -250,6 +263,63 @@ public class Player extends Characters	{
 		if(mana > maxMana) {
 			mana = maxMana;
 		}
+		if(life <= 0) {
+			pc.stopMusic();
+			pc.playSE(12);
+			pc.gameState = pc.gameOverState;
+		}
+	}
+	
+	public boolean canObtainItem(Characters item) {
+		boolean canObtain = false;
+		
+		//if it stackeble
+		if(item.stackable == true) {
+			int index = searchItemInInventory(item.name);
+			
+			if(index != 999) {
+				inventory.get(index).amount++;
+				canObtain=true;
+			}else {//new item
+				if(inventory.size() != inventorSize) {
+					inventory.add(item);
+					canObtain=true;
+				}
+				
+			}
+		}else { // not stackeble
+			if(inventory.size() != inventorSize) {
+				inventory.add(item);
+				canObtain=true;
+			}
+		}
+		return canObtain;
+	}
+	
+
+	
+	public int searchItemInInventory(String itemName) {
+		
+		int itemIndex = 999;
+		for(int i=0; i < inventory.size(); i++) {
+			if(inventory.get(i).name.equals(itemName)) {
+				itemIndex =i;
+				break;
+			}
+		}
+		return itemIndex;
+	}
+	
+	public void setDefaultPosition() {
+		worldX=pc.rectSize * 10;
+		worldY=pc.rectSize * 43;
+		direction = "down";
+	}
+	
+	public void restoreLifeAndMana() {
+		life=maxLife;
+		mana=maxMana;
+		invincibl= false;
 	}
 	
 	public void attacking(){
@@ -280,16 +350,16 @@ public class Player extends Characters	{
 			solidRect.height = attackArea.height;
 			
 			int monsterIndex = pc.collisionM.checkCharacters(this, pc.mon);
-			damageMonster(monsterIndex, attack);
+			damageMonster(monsterIndex, attack, currentWeapon.knockBackPower);
 			
 			
 			int iRectIndex = pc.collisionM.checkCharacters(this, pc.iRect);
 			damageInteractRect(iRectIndex);
 			
-			/*
+			
 			int projectileIndex = pc.collisionM.checkCharacters(this, pc.projectile);
 			damageProjectile(projectileIndex);
-			*/
+			
 			worldX= currentWorldX;
 			worldY = currentWorldY;
 			
@@ -303,47 +373,70 @@ public class Player extends Characters	{
 		}
 	}
 	
+	public void damageProjectile(int i) {
+		if(i != 999) {
+			Characters projectile = pc.projectile[pc.currentMap][i];
+			projectile.alive = false;
+		}
+	}
+	
 	
 	public void pickUpObj(int i) {
 		if(i != 999) {
 			
-			if(pc.obj[i].type == type_pickupONLY) {
-				pc.obj[i].use(this);
-				pc.obj[i] = null;;
-			}else {
+			if(pc.obj[pc.currentMap][i].type == type_pickupONLY) {
+				pc.obj[pc.currentMap][i].use(this);
+				pc.obj[pc.currentMap][i] = null;;
+			}
+			else if(pc.obj[pc.currentMap][i].type == type_obstacle) {
+				pc.player.collision = true;
+				if(keyI.enterPress == true) {
+					attackCancel = true;
+					pc.obj[pc.currentMap][i].interact();
+					
+				}
+			}
+			else {
 				String text;
 				if(inventory.size() != inventorSize) {
-					inventory.add(pc.obj[i]);
+					inventory.add(pc.obj[pc.currentMap][i]);
 					pc.playSE(1);
-					text = "Zobral si + "+pc.obj[i].name + "!";
+					text = "Zobral si + "+pc.obj[pc.currentMap][i].name + "!";
 				}else {
 					text = "Nemôžeš zobrať item ,\nmáš plný inventár!";
 				}
 				pc.ui.addMess(text);
-				pc.obj[i]=null;
+				pc.obj[pc.currentMap][i]=null;
 			}
 		}
 	}
 	
-	public void damageMonster(int i, int attack) {
+	public void damageMonster(int i, int attack, int knockbackPower) {
 		if(i != 999) {
-			if(pc.mon[i].invincibl == false) {
+			if(pc.mon[pc.currentMap][i].invincibl == false) {
 				pc.playSE(5);
-				int damage = attack - pc.mon[i].defense;
+				
+				if(knockbackPower > 0) {
+
+					knockBack(pc.mon[pc.currentMap][i], knockbackPower);
+				}
+				
+				
+				int damage = attack - pc.mon[pc.currentMap][i].defense;
 				if(damage < 1) {
 					damage = 0;
 				}
 				
-				pc.mon[i].life -= damage;
+				pc.mon[pc.currentMap][i].life -= damage;
 				pc.ui.addMess(damage + " poškodenie!");
-				pc.mon[i].invincibl = true;
-				pc.mon[i].damageReact();
+				pc.mon[pc.currentMap][i].invincibl = true;
+				pc.mon[pc.currentMap][i].damageReact();
 				
-				if(pc.mon[i].life <= 0) {
-					pc.mon[i].dying = true;
-					pc.ui.addMess("Zabil si " + pc.mon[i].name + "!");
-					pc.ui.addMess("Exp + " + pc.mon[i].exp + "!");
-					exp += pc.mon[i].exp;
+				if(pc.mon[pc.currentMap][i].life <= 0) {
+					pc.mon[pc.currentMap][i].dying = true;
+					pc.ui.addMess("Zabil si " + pc.mon[pc.currentMap][i].name + "!");
+					pc.ui.addMess("Exp + " + pc.mon[pc.currentMap][i].exp + "!");
+					exp += pc.mon[pc.currentMap][i].exp;
 					checkLevel();
 				}
 			}
@@ -471,13 +564,13 @@ public class Player extends Characters	{
 			if(i != 999) {
 				attackCancel =true;
 				pc.gameState = pc.dialogState;
-				pc.npc[i].speak();
+				pc.npc[pc.currentMap][i].speak();
 			}
 		}
 	}
 	
 	public void selectItem() {
-		int itemIndex = pc.ui.getItemIndexOnSlot(pc.ui.slotCol,pc.ui.slotRow);
+		int itemIndex = pc.ui.getItemIndexOnSlot(pc.ui.playerSlotCol,pc.ui.playerSlotRow);
 		if(itemIndex < inventory.size()) {
 			Characters selectedItem = inventory.get(itemIndex);
 			if(selectedItem.type == type_sword || selectedItem.type == type_axe) {
@@ -497,15 +590,15 @@ public class Player extends Characters	{
 	}
 	
 	public void damageInteractRect(int i) {
-		if(i != 999 && pc.iRect[i].destruct == true && pc.iRect[i].isAxe(this) == true 
-				&& pc.iRect[i].invincibl == false) {
+		if(i != 999 && pc.iRect[pc.currentMap][i].destruct == true && pc.iRect[pc.currentMap][i].isAxe(this) == true 
+				&& pc.iRect[pc.currentMap][i].invincibl == false) {
 			
-			pc.iRect[i].playSE();
-			pc.iRect[i].life--;
-			pc.iRect[i].invincibl=true;
+			pc.iRect[pc.currentMap][i].playSE();
+			pc.iRect[pc.currentMap][i].life--;
+			pc.iRect[pc.currentMap][i].invincibl=true;
 			
-			if(pc.iRect[i].life == 0) {
-				pc.iRect[i] = pc.iRect[i].getDownTree();
+			if(pc.iRect[pc.currentMap][i].life == 0) {
+				pc.iRect[pc.currentMap][i] = pc.iRect[pc.currentMap][i].getDownTree();
 				pc.ui.addMess("Zničil si strom , dobrej si!");
 				//gs.ui.addMessage("Exp + " + 1);
 				coin += 2;
@@ -516,9 +609,9 @@ public class Player extends Characters	{
 	
 	public void contactMon(int i) {
 		if(i != 999) {
-			if(invincibl == false && pc.mon[i].dying == false) {
+			if(invincibl == false && pc.mon[pc.currentMap][i].dying == false) {
 				pc.playSE(6);
-				int damage = pc.mon[i].attack - defense;
+				int damage = pc.mon[pc.currentMap][i].attack - defense;
 				if(damage < 0) {
 					damage = 0;
 				}

@@ -17,7 +17,8 @@ public class Mon_slime_1 extends Characters{
 		
 		type = type_monster;
 		name = "Modrého slima";
-		speed = 1;
+		defaul_speed = 1;
+		speed = defaul_speed;
 		maxLife = 4;
 		life = maxLife;
 		attack = 5;
@@ -46,30 +47,44 @@ public class Mon_slime_1 extends Characters{
 	}
 	
 	public void setAction() {
-		actionCount++;
 		
-		if(actionCount > 120) {
-			Random random = new Random();
-			int i = random.nextInt(100)+1;
-			if(i<=25) {
-				direction="up";
-			}
-			if(i>25 && i <= 50) {
-				direction="down";
-			}
-			if(i>50 && i <= 75) {
-				direction="left";
-			}
-			if(i>75 && i <= 100) {
-				direction="right";
-			}
-			actionCount =0;
+		if(onPath == true) {
+			int goalCol = (pc.player.worldX + pc.player.solidRect.x)/pc.rectSize;
+			int goalROw = (pc.player.worldY + pc.player.solidRect.y)/pc.rectSize;
+			searchPath(goalCol, goalROw);
+		}else {
+			actionCount++;
 			
+			if(actionCount > 120) {
+				Random random = new Random();
+				int i = random.nextInt(100)+1;
+				if(i<=25) {
+					direction="up";
+				}
+				if(i>25 && i <= 50) {
+					direction="down";
+				}
+				if(i>50 && i <= 75) {
+					direction="left";
+				}
+				if(i>75 && i <= 100) {
+					direction="right";
+				}
+				actionCount =0;
+			}
 		}
-		int i = new Random().nextInt(100)+1;
+		
+		int i = new Random().nextInt(200)+1;
 		if(i > 99 && projectile.alive == false && shotAvail == 30) {
 			projectile.set(worldX, worldY, direction, true, this);
-			pc.projectileList.add(projectile);
+			
+			for(int ii=0; ii < pc.projectile[1].length; ii++) {
+				if(pc.projectile[pc.currentMap][ii] == null) {
+					pc.projectile[pc.currentMap][ii] = projectile;
+					break;
+				}
+					
+			}
 			shotAvail=0;
 		}
 	}

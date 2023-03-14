@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -22,6 +23,8 @@ public class Characters {
 	
 	public int spriteCounter= 0;
 	public int spriteNum = 1;
+	public ArrayList<Characters> inventory = new ArrayList<>();
+	public final int inventorSize = 20;
 	public Rectangle solidRect = new Rectangle(0,0,48,48);
 	public Rectangle attackArea = new Rectangle(0,0,0,0);
 	public int solidRectDefaultX , solidRectDefaultY;
@@ -41,9 +44,13 @@ public class Characters {
 	public boolean hpBar = false;
 	public int hpCount = 0;
 	public int shotAvail = 0;
-	
+	public boolean stackable = false;
+	public int amount=1;
 	public int type;
-	
+	public boolean onPath = false;
+	public boolean knockback = false;
+	public int knockbackCoun = 0;
+	public int knockBackPower = 0;
 	public int useCost;
 	
 	//character status
@@ -147,39 +154,64 @@ public class Characters {
 	}
 	
 	public void update() {
-		setAction();
 		
-		collisionOn = false;
-		pc.collisionM.checkRect(this);
-		pc.collisionM.checkObject(this, false);
-		pc.collisionM.checkCharacters(this, pc.npc);
-		pc.collisionM.checkCharacters(this, pc.mon);
-		pc.collisionM.checkCharacters(this, pc.iRect);
-		boolean contactPlayer = pc.collisionM.checkPlayer(this);
 		
-		if(this.type == type_monster && contactPlayer == true) {
-			damagePlayer(attack);
-		}
-		
-		if(collisionOn == false) {
-			switch(direction) {
-			case "up":
-				worldY -= speed;
-				break;
-			case "down":
-				worldY += speed;
-				break;
-			case "left":
-				worldX -= speed;
-				break;
-			case "right":
-				worldX += speed;
-				break;
+		if(knockback == true) {
+			checkCollision();
+			if(collisionOn == true) {
+				knockbackCoun=0;
+				knockback =false;
+				speed= defaul_speed;
+			}
+			else if(collisionOn == false){
+				switch(pc.player.direction) {
+				case "up":
+					worldY -= speed;
+					break;
+				case "down":
+					worldY += speed;
+					break;
+				case "left":
+					worldX -= speed;
+					break;
+				case "right":
+					worldX += speed;
+					break;
+				}
+			}
+			knockbackCoun++;
+			if(knockbackCoun == 20) {
+				knockbackCoun = 0;
+				knockback = false;
+				speed = defaul_speed;
+			}
+			
+		}else {
+			setAction();
+			checkCollision();
+			
+			if(collisionOn == false) {
+				switch(direction) {
+				case "up":
+					worldY -= speed;
+					break;
+				case "down":
+					worldY += speed;
+					break;
+				case "left":
+					worldX -= speed;
+					break;
+				case "right":
+					worldX += speed;
+					break;
+				}
 			}
 		}
 		
+		
+		
 		spriteCounter++;
-		if(spriteCounter > 12) {
+		if(spriteCounter > 24) {
 			if(spriteNum == 1) {
 				spriteNum = 2;
 			}
@@ -235,6 +267,81 @@ public class Characters {
 		if(dyingCount > i*8) {
 			alive=false;
 		}
+	}
+	
+	public void interact() {
+		
+	}
+	
+	
+	
+	public int getDetected(Characters user, Characters target[][],String targetName) {
+		int index=999;
+		
+		int nextWorldX= user.getLeftX();
+		int nextWorldY= user.getTopY();
+		
+		switch(user.direction) {
+		case "up": nextWorldY = user.getTopY()-1; break;
+		case "down": nextWorldY= user.getBottomY()+1; break;
+		case "left": nextWorldX= user.getLeftX()-1;break;
+		case "right": nextWorldX= user.getRightX()+1;break;
+		}
+		
+		int col = nextWorldX/pc.rectSize;
+		int row = nextWorldY/pc.rectSize;
+		;
+		for(int i =0; i < target[1].length; i++) {
+			if(target[pc.currentMap][i] != null) {
+				if(target[pc.currentMap][i].getCol() == col && 
+						target[pc.currentMap][i].getRow() == row &&
+						target[pc.currentMap][i].name.equals(targetName)) {
+					index=i;
+					break;
+				}
+			}
+		}
+		return index;
+	}
+	
+	
+	public void checkCollision() {
+
+		collisionOn = false;
+		pc.collisionM.checkRect(this);
+		pc.collisionM.checkObject(this, false);
+		pc.collisionM.checkCharacters(this, pc.npc);
+		pc.collisionM.checkCharacters(this, pc.mon);
+		pc.collisionM.checkCharacters(this, pc.iRect);
+		boolean contactPlayer = pc.collisionM.checkPlayer(this);
+		
+		if(this.type == type_monster && contactPlayer == true) {
+			damagePlayer(attack);
+		}
+	}
+	
+	public int getLeftX() {
+		return worldX + solidRect.x;
+	}
+	
+	public int getRightX() {
+		return worldX + solidRect.x + solidRect.width;
+	}
+	
+	public int getTopY() {
+		return worldY + solidRect.y;
+	}
+	
+	public int getBottomY() {
+		return worldY + solidRect.y + solidRect.height;
+	}
+	
+	public int getCol() {
+		return (worldX + solidRect.x)/pc.rectSize;
+	}
+	
+	public int getRow() {
+		return (worldY + solidRect.y)/pc.rectSize;
 	}
 	
 	public void damageReact() {
@@ -332,11 +439,11 @@ public class Characters {
 	}
 	
 	public void dropItem(Characters droppedItem) {
-		for(int i = 0; i < pc.obj.length; i++) {
-			if(pc.obj[i] == null) {
-				pc.obj[i] = droppedItem;
-				pc.obj[i].worldX = worldX; //dead monster worldX
-				pc.obj[i].worldY = worldY;
+		for(int i = 0; i < pc.obj[1].length; i++) {
+			if(pc.obj[pc.currentMap][i] == null) {
+				pc.obj[pc.currentMap][i] = droppedItem;
+				pc.obj[pc.currentMap][i].worldX = worldX; //dead monster worldX
+				pc.obj[pc.currentMap][i].worldY = worldY;
 				break;
 			}
 		}
@@ -351,6 +458,72 @@ public class Characters {
 			}
 			pc.player.life -= damage;
 			pc.player.invincibl = true;
+		}
+	}
+	
+	
+	public void searchPath(int goalCol, int goalRow) {
+		int startCol = (worldX + solidRect.x)/pc.rectSize;
+		int startRow = (worldY + solidRect.y)/pc.rectSize;
+		
+		pc.pFinder.setNodes(startCol, startRow, goalCol, goalRow, this);
+		
+		if(pc.pFinder.search() == true) {
+			int nextX = pc.pFinder.pathList.get(0).col * pc.rectSize;
+			int nextY = pc.pFinder.pathList.get(0).row * pc.rectSize;
+			
+			int enLeftX= worldX + solidRect.x;
+			int enRightX= worldX + solidRect.x +solidRect.width;
+			int enTopY= worldY + solidRect.y;
+			int enBottomY= worldY + solidRect.y +solidRect.height;
+			
+			if(enTopY > nextY && enLeftX >= nextX && enRightX < nextX + pc.rectSize) {
+				direction = "up";
+			}
+			else if(enTopY < nextY && enLeftX >= nextX && enRightX < nextX + pc.rectSize) {
+				direction = "down";
+			}
+			else if(enTopY >= nextY && enBottomY <= nextX  + pc.rectSize) {
+				if(enLeftX > nextX) {
+					direction = "left";
+				}
+				if(enLeftX < nextX) {
+					direction = "right";
+				}
+			}
+			else if(enTopY > nextY && enLeftX > nextX) {
+				direction = "up";
+				checkCollision();
+				if(collisionOn == true) {
+					direction = "left";
+				}
+			}
+			else if(enTopY > nextY && enLeftX < nextX) {
+				direction = "up";
+				checkCollision();
+				if(collisionOn == true) {
+					direction = "right";
+				}
+			}
+			else if(enTopY < nextY && enLeftX > nextX) {
+				direction = "down";
+				checkCollision();
+				if(collisionOn == true) {
+					direction = "left";
+				}
+			}
+			else if(enTopY < nextY && enLeftX < nextX) {
+				direction = "down";
+				checkCollision();
+				if(collisionOn == true) {
+					direction = "right";
+				}
+			}
+			//int nextCol = pc.pFinder.pathList.get(0).col;
+			//int nextRow =pc.pFinder.pathList.get(0).row;
+			//if(nextCol == goalCol && nextRow == goalRow) {
+			//	onPath = false;
+			//}
 		}
 	}
 	
